@@ -2,7 +2,6 @@ import asyncio
 import base64
 import csv
 import datetime
-import decimal
 import io
 import json
 import os
@@ -10,7 +9,6 @@ import re
 import shutil
 import smtplib
 import ssl
-import tempfile
 import threading
 import time
 import traceback
@@ -19,7 +17,6 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from io import BytesIO, StringIO
-from math import ceil
 from time import sleep
 from urllib.parse import unquote
 from zipfile import ZipFile
@@ -27,61 +24,46 @@ from zipfile import ZipFile
 import aiohttp
 import pandas as pd
 import requests
-from aiosmtplib import SMTP
 from asgiref.sync import async_to_sync, sync_to_async
 from bs4 import BeautifulSoup
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
-from django import forms
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, User
-from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.core.validators import validate_email
-from django.db import connection, transaction
 from django.db.models import (
     Avg,
     Case,
     DecimalField,
     F,
     FloatField,
-    Max,
-    Min,
     Q,
     Sum,
-    Value,
     When,
 )
-from django.db.models.functions import Coalesce
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.http.response import JsonResponse
-from django.middleware import csrf
-from django.shortcuts import get_object_or_404, redirect, render
-from django.templatetags.static import static
-from django.utils import formats, timezone
+from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.utils.html import format_html
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView
-from openpyxl import Workbook
 from PIL import Image
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import landscape, letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
-from requests.exceptions import ConnectTimeout, RequestException
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.sync import TelegramClient
 
 from .decorators import Broker_only, allowed_users
-from .filters import OrderFilter
 from .models import (
     Accounting,
     ClientDetail,

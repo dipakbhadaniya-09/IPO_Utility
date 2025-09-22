@@ -1,6 +1,5 @@
-from django.contrib.auth.models import AbstractUser, User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils import timezone
 from django.utils.timezone import now, timedelta
 
 # Create your models here.
