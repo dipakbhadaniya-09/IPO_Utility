@@ -125,12 +125,6 @@ DATABASES = {
     }
 }
 
-# DATABASES = {
-#     'default':{
-#         'ENGINE':'django.db.backends.sqlite3',
-#         'NAME':os.path.join(BASE_DIR,'db.sqlite3')
-#     }
-# }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -170,11 +164,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = "/home/ubuntu/ipoutility-website/static/"
 AUTH_USER_MODEL = "home.CustomUser"
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "static")
-# ]
 
-# DATA_UPLOAD_MAX_MEMORY_SIZE = 2000485760
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000000
 
 from django.contrib.messages import constants as messages
