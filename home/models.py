@@ -1,8 +1,7 @@
-from django.contrib.auth.models import User
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 from django.db import models
-from django.utils.timezone import now, timedelta
 from django.utils import timezone
+from django.utils.timezone import now, timedelta
 
 # Create your models here.
 
@@ -17,23 +16,25 @@ class CustomUser(AbstractUser):
     Premium_Order_limit = models.IntegerField(blank=True, null=True)
     Allotment_access = models.BooleanField(max_length=100, default=False, null=True)
     Expiry_Date = models.DateField(default=now() + timedelta(days=365))
-    AppPassword = models.CharField(max_length=100, default=None,blank=True,null=True)
+    AppPassword = models.CharField(max_length=100, default=None, blank=True, null=True)
 
     TelegramApi_id = models.CharField(max_length=100, blank=True, null=True)
     TelegramApi_key = models.CharField(max_length=100, blank=True, null=True)
     Mobileno = models.CharField(max_length=15, blank=True, null=True)
     Telegram_session = models.CharField(max_length=10000, blank=True, null=True)
 
+
 class CurrentIpoName(models.Model):
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="IPO", null=True)
+        CustomUser, on_delete=models.CASCADE, related_name="IPO", null=True
+    )
     IPOType = models.CharField(max_length=100, null=True, default=None)
     IPOName = models.CharField(max_length=100, default=None)
     IPOPrice = models.FloatField(blank=True)
     PreOpenPrice = models.FloatField(default=0)
     LotSizeRetail = models.FloatField(null=True, default=None)
     LotSizeSHNI = models.FloatField(null=True, default=None)
-    LotSizeBHNI = models.FloatField(null=True, default=None)    
+    LotSizeBHNI = models.FloatField(null=True, default=None)
     Remark = models.CharField(max_length=500, blank=True)
     TotalIPOSzie = models.CharField(max_length=100, blank=True)
     RetailPercentage = models.CharField(max_length=100, blank=True)
@@ -56,34 +57,32 @@ class CurrentIpoName(models.Model):
 
 class GroupDetail(models.Model):
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="Group", null=True)
+        CustomUser, on_delete=models.CASCADE, related_name="Group", null=True
+    )
     GroupName = models.CharField(max_length=100, default=None)
     MobileNo = models.CharField(max_length=100, blank=True)
-    Address = models.CharField(max_length=500,  blank=True)
+    Address = models.CharField(max_length=500, blank=True)
     Collection = models.FloatField(default=0)
-    Remark = models.CharField(max_length=500,  blank=True)
-    Email = models.CharField(max_length=100,  blank=True)
+    Remark = models.CharField(max_length=500, blank=True)
+    Email = models.CharField(max_length=100, blank=True)
     Active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         self.GroupName = self.GroupName.upper()
         super(GroupDetail, self).save(*args, **kwargs)
-    
+
     def __str__(self):
         return self.GroupName
 
 
-
-
-
 class ClientDetail(models.Model):
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="Client", null=True)
+        CustomUser, on_delete=models.CASCADE, related_name="Client", null=True
+    )
     PANNo = models.CharField(max_length=10, default=None)
-    Name = models.CharField(max_length=100,  blank=True)
-    Group = models.ForeignKey(
-        GroupDetail, default=None, on_delete=models.SET_DEFAULT)
-    ClientIdDpId = models.CharField(max_length=100,  blank=True)
+    Name = models.CharField(max_length=100, blank=True)
+    Group = models.ForeignKey(GroupDetail, default=None, on_delete=models.SET_DEFAULT)
+    ClientIdDpId = models.CharField(max_length=100, blank=True)
     Active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
@@ -94,33 +93,49 @@ class ClientDetail(models.Model):
     def __str__(self):
         return self.Name
 
+
 class Accounting(models.Model):
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="accounting", null=True)
+        CustomUser, on_delete=models.CASCADE, related_name="accounting", null=True
+    )
     ipo = models.ForeignKey(
-        CurrentIpoName, blank=True, null=True, default=None, on_delete=models.SET_DEFAULT)   
+        CurrentIpoName,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.SET_DEFAULT,
+    )
     group = models.ForeignKey(
-        GroupDetail,blank=True, null=True, default=None, on_delete=models.SET_DEFAULT)  
-    amount = models.DecimalField(max_digits=12, decimal_places=2)  
-    amount_type = models.CharField(max_length=10, choices=[("credit", "Credit"), ("debit", "Debit")])
-    ipo_name = models.CharField( max_length=1000, default=None, null=True )
-    group_name = models.CharField( max_length=1000, default=None, null=True )
+        GroupDetail, blank=True, null=True, default=None, on_delete=models.SET_DEFAULT
+    )
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    amount_type = models.CharField(
+        max_length=10, choices=[("credit", "Credit"), ("debit", "Debit")]
+    )
+    ipo_name = models.CharField(max_length=1000, default=None, null=True)
+    group_name = models.CharField(max_length=1000, default=None, null=True)
     status = models.BooleanField(default=0)
     remark = models.TextField(blank=True, null=True)
     date_time = models.DateTimeField()
-    jv = models.BooleanField( default='False') 
-  
+    jv = models.BooleanField(default="False")
 
     def __str__(self):
-         return f"{self.ipo} - {self.group} - {self.amount_type} - {self.amount}"
+        return f"{self.ipo} - {self.group} - {self.amount_type} - {self.amount}"
+
 
 class Order(models.Model):
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="Order", null=True)
+        CustomUser, on_delete=models.CASCADE, related_name="Order", null=True
+    )
     OrderGroup = models.ForeignKey(
-        GroupDetail, default=None, on_delete=models.SET_DEFAULT)
+        GroupDetail, default=None, on_delete=models.SET_DEFAULT
+    )
     OrderIPOName = models.ForeignKey(
-        CurrentIpoName, default=None, on_delete=models.SET_DEFAULT, related_name='IPOName1')
+        CurrentIpoName,
+        default=None,
+        on_delete=models.SET_DEFAULT,
+        related_name="IPOName1",
+    )
     OrderType = models.CharField(max_length=100, default=None)  # Buy/Sell
     Rate = models.FloatField(default=None)
     Quantity = models.FloatField(default=None)
@@ -132,8 +147,8 @@ class Order(models.Model):
     OrderTime = models.TimeField(null=True)
     InvestorType = models.CharField(max_length=100, default=None, null=True)
     Method = models.CharField(max_length=100, default=None, null=True)
-    Telly = models.CharField(max_length=100, default='False', null=True)
-    
+    Telly = models.CharField(max_length=100, default="False", null=True)
+
     def save(self, *args, **kwargs):
         self.OrderType = self.OrderType.upper()
         super(Order, self).save(*args, **kwargs)
@@ -145,17 +160,18 @@ def __str__(self):
 
 class OrderDetail(models.Model):
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="OrderDetail", null=True)
+        CustomUser, on_delete=models.CASCADE, related_name="OrderDetail", null=True
+    )
     Order = models.ForeignKey(
-        Order, default=None, on_delete=models.SET_DEFAULT, null=True)
+        Order, default=None, on_delete=models.SET_DEFAULT, null=True
+    )
     OrderDetailPANNo = models.ForeignKey(
-        ClientDetail, blank=True, null=True, default=None, on_delete=models.SET_DEFAULT)
+        ClientDetail, blank=True, null=True, default=None, on_delete=models.SET_DEFAULT
+    )
     AllotedQty = models.FloatField(blank=True, null=True)
     PreOpenPrice = models.FloatField(default=0)
-    ApplicationNumber = models.CharField(
-        max_length=100, blank=True)
-    DematNumber = models.CharField(
-        max_length=100, blank=True)
+    ApplicationNumber = models.CharField(max_length=100, blank=True)
+    DematNumber = models.CharField(max_length=100, blank=True)
     Amount = models.FloatField(default=0)
     Active = models.BooleanField(max_length=100, default=True)
 
@@ -164,15 +180,11 @@ def __str__(self):
     return self.OrderDetailIPOName
 
 
-
-
-
-
 class RateList(models.Model):
-    user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     RateListIPOName = models.ForeignKey(
-        CurrentIpoName, default=None, on_delete=models.SET_DEFAULT)
+        CurrentIpoName, default=None, on_delete=models.SET_DEFAULT
+    )
     kostakBuyRate = models.FloatField(default=0)
     KostakBuyQty = models.FloatField(default=0)
     kostakSellRate = models.FloatField(default=0)
