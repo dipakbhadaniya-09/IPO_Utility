@@ -798,7 +798,7 @@ async def Kfintech_fetch_allotment(
                 for j, entry in enumerate(soup):
                     appl_no = entry["Appl.No"]
                     name = entry["Name"]
-                    if name == "" or name == ".":
+                    if name in ("", "."):
                         flag = 1
                     applied = entry["Applied"]
                     alloti = entry["Alloted"]
@@ -6901,12 +6901,7 @@ def GroupWiseDashboard(request):
         html_table += "<tr style='text-align: center;'>"
         html_table += f"<th>{index}</th>"
         for col_name, cell in row.items():
-            if (
-                col_name != "JV"
-                and col_name != "Total"
-                and col_name != "Collection"
-                and col_name != "Due Amount"
-            ):
+            if col_name not in ("JV", "Total", "Collection", "Due Amount"):
                 # For IPO amount cells, add data attributes
                 ipo = IPOName[list(df.columns).index(col_name)]
                 # Calculate accounting amount **only for this group and IPO**
@@ -8141,16 +8136,16 @@ def exportBillingFilter(request, IPOid, group=None, IPOType=None, InvestorType=N
             ]
         )
 
-    if group != "None" and group != "All":
+    if group not in ("None", "All"):
         gid = GroupDetail.objects.get(GroupName=group, user=request.user).id
         entry = entry.filter(Order__OrderGroup_id=gid)
         order = order.filter(OrderGroup_id=gid)
-    if IPOType != "None" and IPOType != "All":
+    if IPOType not in ("None", "All"):
         entry = entry.filter(Order__OrderCategory=IPOType)
         order = order.filter(OrderCategory=IPOType)
 
     if IPOName.IPOType == "MAINBOARD":
-        if InvestorType != "None" and InvestorType != "All":
+        if InvestorType not in ("None", "All"):
             entry = entry.filter(Order__InvestorType=InvestorType)
             order = order.filter(InvestorType=InvestorType)
         for member in entry.filter().values_list(
@@ -8531,11 +8526,11 @@ def exportBillingFilterpdf(request, IPOid, group=None, IPOType=None, InvestorTyp
 
     blank = [""]
 
-    if group != "None" and group != "All":
+    if group not in ("None", "All"):
         gid = GroupDetail.objects.get(GroupName=group, user=request.user).id
         entry = entry.filter(Order__OrderGroup_id=gid)
         order = order.filter(OrderGroup_id=gid)
-    if IPOType != "None" and IPOType != "All":
+    if IPOType not in ("None", "All"):
         entry = entry.filter(Order__OrderCategory=IPOType)
         order = order.filter(OrderCategory=IPOType)
 
@@ -8572,7 +8567,7 @@ def exportBillingFilterpdf(request, IPOid, group=None, IPOType=None, InvestorTyp
         )
 
     if IPOName.IPOType == "MAINBOARD":
-        if InvestorType != "None" and InvestorType != "All":
+        if InvestorType not in ("None", "All"):
             entry = entry.filter(Order__InvestorType=InvestorType)
             order = order.filter(InvestorType=InvestorType)
         for member in entry.filter().values_list(
@@ -9097,7 +9092,7 @@ def export(
         entry = OrderDetail.objects.filter(
             user=request.user, Order__OrderIPOName_id=IPOid
         )
-        if group != "None" and group != "All":
+        if group not in ("None", "All"):
             gid = GroupDetail.objects.get(GroupName=group, user=request.user).id
             entry = entry.filter(Order__OrderGroup_id=gid)
     else:
@@ -9107,7 +9102,7 @@ def export(
             Order__OrderGroup_id=request.user.Group_id,
         )
         IPOName = CurrentIpoName.objects.get(id=IPOid, user=request.user.Broker_id)
-        if group != "None" and group != "All":
+        if group not in ("None", "All"):
             gid = GroupDetail.objects.get(id=request.user.Group_id).id
             entry = entry.filter(Order__OrderGroup_id=gid)
 
@@ -9140,9 +9135,9 @@ def export(
         ]
     )
 
-    if IPOType != "None" and IPOType != "All":
+    if IPOType not in ("None", "All"):
         entry = entry.filter(Order__OrderCategory=IPOType)
-    if InvestorType != "None" and InvestorType != "All":
+    if InvestorType not in ("None", "All"):
         entry = entry.filter(Order__InvestorType=InvestorType)
 
     for member in entry.filter(OrderDetailPANNo_id=None).values_list(
@@ -9226,9 +9221,9 @@ def Group_wise_export(
             OrderTime = OrderTime[0:2] + ":" + OrderTime[2:4] + ":" + OrderTime[4:6]
             entry = entry.filter(Order__OrderTime=OrderTime)
 
-        if IPOType != "None" and IPOType != "All":
+        if IPOType not in ("None", "All"):
             entry = entry.filter(Order__OrderCategory=IPOType)
-        if InvestorType != "None" and InvestorType != "All":
+        if InvestorType not in ("None", "All"):
             entry = entry.filter(Order__InvestorType=InvestorType)
 
         if entry.exists():
@@ -9325,7 +9320,7 @@ def exportall(
         entry = OrderDetail.objects.filter(
             user=request.user, Order__OrderIPOName_id=IPOid
         )
-        if group != "None" and group != "All":
+        if group not in ("None", "All"):
             gid = GroupDetail.objects.get(GroupName=group, user=request.user).id
             entry = entry.filter(Order__OrderGroup_id=gid)
     else:
@@ -9335,7 +9330,7 @@ def exportall(
             Order__OrderGroup_id=request.user.Group_id,
         )
         IPOName = CurrentIpoName.objects.get(id=IPOid, user=request.user.Broker_id)
-        if group != "None" and group != "All":
+        if group not in ("None", "All"):
             gid = GroupDetail.objects.get(id=request.user.Group_id).id
             entry = entry.filter(Order__OrderGroup_id=gid)
 
@@ -9369,9 +9364,9 @@ def exportall(
         ]
     )
 
-    if IPOType != "None" and IPOType != "All":
+    if IPOType not in ("None", "All"):
         entry = entry.filter(Order__OrderCategory=IPOType)
-    if InvestorType != "None" and InvestorType != "All":
+    if InvestorType not in ("None", "All"):
         entry = entry.filter(Order__InvestorType=InvestorType)
 
     entry = entry.order_by("Order__OrderGroup__GroupName", "Order__Rate")
@@ -9455,9 +9450,9 @@ def Group_wise_exportall(
             OrderTime = OrderTime[0:2] + ":" + OrderTime[2:4] + ":" + OrderTime[4:6]
             entry = entry.filter(Order__OrderTime=OrderTime)
 
-        if IPOType != "None" and IPOType != "All":
+        if IPOType not in ("None", "All"):
             entry = entry.filter(Order__OrderCategory=IPOType)
-        if InvestorType != "None" and InvestorType != "All":
+        if InvestorType not in ("None", "All"):
             entry = entry.filter(Order__InvestorType=InvestorType)
 
         if entry.exists():
@@ -10260,7 +10255,7 @@ def dashboardform(request, IPOid, value):
             if ProfitMargin != "":
                 IPO.ProfitMargin = ProfitMargin
             if Premium != "":
-                if value == "A" or value == "B":
+                if value in ("A", "B"):
                     IPO.Premium = Premium
                 if value == "C":
                     IPO.PreOpenPrice = Premium
@@ -10313,7 +10308,7 @@ def dashboardform(request, IPOid, value):
             if ProfitMargin != "":
                 IPO.ProfitMargin = ProfitMargin
             if Premium != "":
-                if value == "A" or value == "B":
+                if value in ("A", "B"):
                     IPO.Premium = Premium
                 if value == "C":
                     IPO.PreOpenPrice = Premium
