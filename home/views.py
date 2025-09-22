@@ -3776,7 +3776,7 @@ def BUY(request, IPOid, selectgroup=None):
                     )
                     orderdetail.save()
             except:
-                a == 0
+                pass
 
         if KostakQTYSHNI != "" and KostakQTYSHNI != "0" and KostakRateSHNI != "":
             order = Order(
@@ -3815,7 +3815,7 @@ def BUY(request, IPOid, selectgroup=None):
                     )
                     orderdetail.save()
             except:
-                a == 0
+                pass
 
         if KostakQTYBHNI != "" and KostakQTYBHNI != "0" and KostakRateBHNI != "":
             order = Order(
@@ -3854,7 +3854,7 @@ def BUY(request, IPOid, selectgroup=None):
                     )
                     orderdetail.save()
             except:
-                a == 0
+                pass
 
         if SubjectToQTY != "" and SubjectToQTY != "0" and SubjectToRate != "":
             if (
@@ -3911,7 +3911,7 @@ def BUY(request, IPOid, selectgroup=None):
                     )
                     orderdetail.save()
             except:
-                a == 0
+                pass
         if (
             SubjectToQTYSHNI != ""
             and SubjectToQTYSHNI != "0"
@@ -3972,7 +3972,7 @@ def BUY(request, IPOid, selectgroup=None):
                     )
                     orderdetail.save()
             except:
-                a == 0
+                pass
         if (
             SubjectToQTYBHNI != ""
             and SubjectToQTYBHNI != "0"
@@ -4033,7 +4033,7 @@ def BUY(request, IPOid, selectgroup=None):
                     )
                     orderdetail.save()
             except:
-                a == 0
+                pass
 
         if PremiumQTY != "" and PremiumQTY != "0" and PremiumRate != "":
             order = Order(
@@ -4071,7 +4071,7 @@ def BUY(request, IPOid, selectgroup=None):
                 calculate(IPOid, request.user, entry2.id)
                 a = 1
             except:
-                a == 0
+                pass
 
         if (
             CallQty != ""
@@ -4117,7 +4117,6 @@ def BUY(request, IPOid, selectgroup=None):
                 a = 1
             except:
                 traceback.print_exc()
-                a == 0
 
         if PutQTY != "" and PutQTY != "0" and PutRate != "" and PutStrikePrice != "":
             order = Order(
@@ -4158,7 +4157,6 @@ def BUY(request, IPOid, selectgroup=None):
                 a = 1
             except:
                 traceback.print_exc()
-                a == 0
 
         if a == 1:
             messages.success(
@@ -12430,7 +12428,6 @@ def sell(request, IPOid, selectgroup=None):
                 a = 1
             except:
                 traceback.print_exc()
-                a == 0
 
         if PutQTY != "" and PutQTY != "0" and PutRate != "" and PutStrikePrice != "":
             order = Order(
@@ -12471,7 +12468,6 @@ def sell(request, IPOid, selectgroup=None):
                 a = 1
             except:
                 traceback.print_exc()
-                a == 0
 
         if a == 1:
             messages.success(
