@@ -12,19 +12,8 @@ class OrderFilter(django_filters.FilterSet):
                    'Rate', 'OrderDetailPANNo', 'AllotedQty', 'ApplicationNumber']
 
 
-# from rest_framework import serializers
-# from .models import OrderDetail
 
 
-# class StringSerializer(serializers.StringRelatedField):
-#     def to_internal_value(self, value):
-#         return value
 
 
-# class JournalSerializer(serializers.ModelSerializer):
-#     author = StringSerializer(many=False)
-#     categories = StringSerializer(many=True)
 
-#     class Meta:
-#         model = OrderDetail
-#         fields = ('__all__')

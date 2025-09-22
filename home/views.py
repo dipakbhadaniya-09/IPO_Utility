@@ -211,13 +211,6 @@ def linkin_function():
 #                 sleep(0.5)
 #         return None
 
-#     urls = [
-#         'https://kprism.kfintech.com/ipostatus/',#server3
-#         'https://kosmic.kfintech.com/ipostatus/', #server1
-#         'https://evault.kfintech.com/ipostatus/',#server2
-#         'https://rti.kfintech.com/ipostatus/',#server5
-#         'https://kcasop.kfintech.com/ipostatus/',#server4
-#     ]
 
 #     html_content = None
 #     for url in urls:
