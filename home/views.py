@@ -2104,7 +2104,7 @@ def IPOSETUP(request):
     page_obj = None
     try:
         page_size = request.POST.get("Ip_page_size")
-        if page_size != "" and page_size != None:
+        if page_size != "" and page_size is not None:
             request.session["Ip_page_size"] = page_size
         else:
             page_size = request.session["Ip_page_size"]
@@ -2381,7 +2381,7 @@ def GroupSetup(request):
     page_obj = None
     try:
         page_size = request.POST.get("Gp_page_size")
-        if page_size != "" and page_size != None:
+        if page_size != "" and page_size is not None:
             request.session["Gp_page_size"] = page_size
         else:
             page_size = request.session["Gp_page_size"]
@@ -2862,7 +2862,7 @@ def updatepreopenprice(request, IPOid, group, IPOType, InvestType):
 @sync_to_async
 def Entry_calculate_update(i, IPOName):
     if i.Order.OrderCategory == "Kostak":
-        if i.AllotedQty == None:
+        if i.AllotedQty is None:
             i.Amount = 0
             i.save()
             return
@@ -2898,7 +2898,7 @@ def Entry_calculate_update(i, IPOName):
             )
 
     if i.Order.OrderCategory == "Subject To":
-        if i.AllotedQty == None:
+        if i.AllotedQty is None:
             i.Amount = 0
             i.save()
             return
@@ -3025,7 +3025,7 @@ def calculate(IPOid, user, Orderid=None):
             i_amount = amount[key]
 
         if i.Order.OrderCategory == "Kostak":
-            if i.AllotedQty == None:
+            if i.AllotedQty is None:
                 i.Amount = 0
                 entries_to_update.append(i)
                 continue
@@ -3064,7 +3064,7 @@ def calculate(IPOid, user, Orderid=None):
                 )
 
         if i.Order.OrderCategory == "Subject To":
-            if i.AllotedQty == None:
+            if i.AllotedQty is None:
                 i.Amount = 0
                 entries_to_update.append(i)
                 continue
@@ -3382,7 +3382,7 @@ def UdatepreopenpriceAmount(user, IPOid, OrderDetailId, OrderCategory, InvestorT
     for i in entry:
         if OrderCategory == "Kostak":
             if i.Order.InvestorType == InvestorType:
-                if i.AllotedQty == None:
+                if i.AllotedQty is None:
                     i.Amount = 0
                     i.save()
                     continue
@@ -3426,7 +3426,7 @@ def UdatepreopenpriceAmount(user, IPOid, OrderDetailId, OrderCategory, InvestorT
 
         if OrderCategory == "Subject To":
             if i.Order.InvestorType == InvestorType:
-                if i.AllotedQty == None:
+                if i.AllotedQty is None:
                     i.Amount = 0
                     i.save()
                     continue
@@ -3876,7 +3876,7 @@ def BUY(request, IPOid, selectgroup=None):
 
         if SubjectToQTY != "" and SubjectToQTY != "0" and SubjectToRate != "":
             if (
-                request.POST.get("subjectToIsPremiumRetail", "") != None
+                request.POST.get("subjectToIsPremiumRetail", "") is not None
                 and request.POST.get("subjectToIsPremiumRetail", "") != ""
                 and request.POST.get("subjectToIsPremiumRetail", "") == "on"
             ):
@@ -3936,7 +3936,7 @@ def BUY(request, IPOid, selectgroup=None):
             and SubjectToRateSHNI != ""
         ):
             if (
-                request.POST.get("subjectToIsPremiumSHNI", "") != None
+                request.POST.get("subjectToIsPremiumSHNI", "") is not None
                 and request.POST.get("subjectToIsPremiumSHNI", "") != ""
                 and request.POST.get("subjectToIsPremiumSHNI", "") == "on"
             ):
@@ -3997,7 +3997,7 @@ def BUY(request, IPOid, selectgroup=None):
             and SubjectToRateBHNI != ""
         ):
             if (
-                request.POST.get("subjectToIsPremiumBHNI", "") != None
+                request.POST.get("subjectToIsPremiumBHNI", "") is not None
                 and request.POST.get("subjectToIsPremiumBHNI", "") != ""
                 and request.POST.get("subjectToIsPremiumBHNI", "") == "on"
             ):
@@ -4192,7 +4192,7 @@ def BUY(request, IPOid, selectgroup=None):
                 {"status": "fail", "message": "BUY order dose not placed"}
             )
 
-    if selectgroup != None:
+    if selectgroup is not None:
         selectgroup = unquote(selectgroup)
     else:
         if Order.objects.count() > 0:
@@ -4310,7 +4310,7 @@ def UpdateOrder(request, IPOid, OrderId, Grpf, OrCtf, InTyf):
             entry.OrderCategory = OrderCategory
             if OrderCategory == "Subject To":
                 if (
-                    RateOrPremium != None
+                    RateOrPremium is not None
                     and RateOrPremium != ""
                     and RateOrPremium == "on"
                 ):
@@ -4579,18 +4579,18 @@ def OrderDetailFunction(
     if OrderTime == "None":
         OrderTime = None
 
-    if OrderDate != None:
+    if OrderDate is not None:
         OrderDate = OrderDate[0:4] + "-" + OrderDate[4:6] + "-" + OrderDate[6:8]
         entry = entry.filter(Order__OrderDate=OrderDate)
 
-    if OrderTime != None:
+    if OrderTime is not None:
         OrderTime = OrderTime[0:2] + ":" + OrderTime[2:4] + ":" + OrderTime[4:6]
         entry = entry.filter(Order__OrderTime=OrderTime)
 
     AppTotal = len(entry)
     Appwithoutpan = len(entry.filter(OrderDetailPANNo_id=None))
 
-    if GrpName == None and OrderCategory == None and InvestorType == None:
+    if GrpName is None and OrderCategory is None and InvestorType is None:
         Groupfilter = "All"
         IPOTypefilter = "All"
         InvestorTypeFilter = "All"
@@ -4688,11 +4688,11 @@ def OrderDetailFunction(
         Groupfilter = request.POST.get("Groupfilter", "")
         IPOTypefilter = request.POST.get("IPOTypefilter", "")
         InvestorTypeFilter = request.POST.get("InvestorTypeFilter", "")
-        if Groupfilter == "" or Groupfilter == None:
+        if Groupfilter == "" or Groupfilter is None:
             Groupfilter = "All"
-        if IPOTypefilter == "" or IPOTypefilter == None:
+        if IPOTypefilter == "" or IPOTypefilter is None:
             IPOTypefilter = "All"
-        if InvestorTypeFilter == "" or InvestorTypeFilter == None:
+        if InvestorTypeFilter == "" or InvestorTypeFilter is None:
             InvestorTypeFilter = "All"
 
         if is_valid_queryparam(Groupfilter) and Groupfilter != "All":
@@ -4708,14 +4708,14 @@ def OrderDetailFunction(
         AppTotal = len(entry)
         Appwithoutpan = len(entry.filter(OrderDetailPANNo_id=None))
 
-        if OrderDate != None and OrderTime != None:
+        if OrderDate is not None and OrderTime is not None:
             OrderDate = OrderDate[0:4] + OrderDate[5:7] + OrderDate[8:10]
             OrderTime = OrderTime[0:2] + OrderTime[3:5] + OrderTime[6:8]
 
     page_obj = None
     try:
         page_size = request.POST.get("page_size")
-        if page_size != "" and page_size != None:
+        if page_size != "" and page_size is not None:
             request.session["page_size"] = page_size
         else:
             page_size = request.session["page_size"]
@@ -4944,13 +4944,13 @@ def filterfromstatus(
     Groupfilter = Groupfilter
     OrderCategoryFilter = OrderCategoryFilter
 
-    if InvestorTypeFilter == "" or InvestorTypeFilter == None:
+    if InvestorTypeFilter == "" or InvestorTypeFilter is None:
         InvestorTypeFilter = "All"
 
-    if Groupfilter == "" or Groupfilter == None:
+    if Groupfilter == "" or Groupfilter is None:
         Groupfilter = "All"
 
-    if OrderCategoryFilter == "" or OrderCategoryFilter == None:
+    if OrderCategoryFilter == "" or OrderCategoryFilter is None:
         OrderCategoryFilter = "All"
 
     OrdCat = ["Kostak", "SubjectTo", "CALL", "PUT"]
@@ -4978,7 +4978,7 @@ def filterfromstatus(
                         InvestorType=investortype,
                     )
                 count = x.aggregate(Sum("Quantity"))["Quantity__sum"]
-                if count == None:
+                if count is None:
                     dict_count[f"{ordercategory}{investortype}{ordertype}Count"] = 0
                     z = 0
                 else:
@@ -5088,7 +5088,7 @@ def filterfromstatus(
     PremiumBuyfilter = products.filter(OrderType="BUY", OrderCategory="Premium")
     PremiumBuyCount11 = PremiumBuyfilter.aggregate(Sum("Quantity"))
     PremiumBuyCount1 = PremiumBuyCount11["Quantity__sum"]
-    if PremiumBuyCount1 == None:
+    if PremiumBuyCount1 is None:
         PremiumBuyCount = 0
     else:
         PremiumBuyCount = PremiumBuyCount1
@@ -5105,7 +5105,7 @@ def filterfromstatus(
     PremiumSellfilter = products.filter(OrderType="SELL", OrderCategory="Premium")
     PremiumSellCount11 = PremiumSellfilter.aggregate(Sum("Quantity"))
     PremiumSellCount1 = PremiumSellCount11["Quantity__sum"]
-    if PremiumSellCount1 == None:
+    if PremiumSellCount1 is None:
         PremiumSellCount = 0
     else:
         PremiumSellCount = PremiumSellCount1
@@ -5199,7 +5199,7 @@ def filterfromstatus(
     page_obj = None
     try:
         page_size = request.POST.get("Order_page_size")
-        if page_size != "" and page_size != None:
+        if page_size != "" and page_size is not None:
             request.session["Order_page_size"] = page_size
         else:
             page_size = request.session["Order_page_size"]
@@ -5362,7 +5362,7 @@ def UpdateOrderAmount(IPOid, user):
     order.update(Amount=0)
     for i in entry:
         if i.Order.OrderCategory == "Kostak":
-            if i.AllotedQty == None:
+            if i.AllotedQty is None:
                 continue
             else:
                 AllotedQty = i.AllotedQty
@@ -5388,7 +5388,7 @@ def UpdateOrderAmount(IPOid, user):
                 )
 
         if i.Order.OrderCategory == "Subject To":
-            if i.AllotedQty == None:
+            if i.AllotedQty is None:
                 continue
             else:
                 AllotedQty = i.AllotedQty
@@ -5501,7 +5501,7 @@ def Status(request, IPOid):
     page_obj = None
     try:
         page_size = request.POST.get("status_page_size")
-        if page_size != "" and page_size != None:
+        if page_size != "" and page_size is not None:
             request.session["status_page_size"] = page_size
         else:
             page_size = request.session["status_page_size"]
@@ -5578,7 +5578,7 @@ def Status(request, IPOid):
             NOBUYKostak = Kostakentry.filter(OrderType="BUY")
             NOBUYKostak11 = NOBUYKostak.aggregate(Sum("Quantity"))
             NOBUYKostak1 = NOBUYKostak11["Quantity__sum"]
-            if NOBUYKostak1 == None:
+            if NOBUYKostak1 is None:
                 NOBUYKostakentry = 0
             else:
                 NOBUYKostakentry = NOBUYKostak1
@@ -5595,7 +5595,7 @@ def Status(request, IPOid):
             BUYKostakentry = Kostakentry.filter(OrderType="BUY")
             BUYKostakentrytotal11 = BUYKostakentry.aggregate(Sum("Amount"))
             BUYKostakentrytotal1 = BUYKostakentrytotal11["Amount__sum"]
-            if BUYKostakentrytotal1 == None:
+            if BUYKostakentrytotal1 is None:
                 BUYKostakentrytotal = 0
             else:
                 BUYKostakentrytotal = BUYKostakentrytotal1
@@ -5603,7 +5603,7 @@ def Status(request, IPOid):
             NOSELLKostak = Kostakentry.filter(OrderType="SELL")
             NOSELLKostak11 = NOSELLKostak.aggregate(Sum("Quantity"))
             NOSELLKostak1 = NOSELLKostak11["Quantity__sum"]
-            if NOSELLKostak1 == None:
+            if NOSELLKostak1 is None:
                 NOSELLKostakentry = 0
             else:
                 NOSELLKostakentry = NOSELLKostak1
@@ -5619,7 +5619,7 @@ def Status(request, IPOid):
             SELLKostakentry = Kostakentry.filter(OrderType="SELL")
             SELLKostakentrytotal11 = SELLKostakentry.aggregate(Sum("Amount"))
             SELLKostakentrytotal1 = SELLKostakentrytotal11["Amount__sum"]
-            if SELLKostakentrytotal1 == None:
+            if SELLKostakentrytotal1 is None:
                 SELLKostakentrytotal = 0
             else:
                 SELLKostakentrytotal = SELLKostakentrytotal1
@@ -5642,7 +5642,7 @@ def Status(request, IPOid):
             NOBUYSubjectTo = SubjectToentry.filter(OrderType="BUY")
             NOBUYSubjectTo11 = NOBUYSubjectTo.aggregate(Sum("Quantity"))
             NOBUYSubjectTo1 = NOBUYSubjectTo11["Quantity__sum"]
-            if NOBUYSubjectTo1 == None:
+            if NOBUYSubjectTo1 is None:
                 NOBUYSubjectToentry = 0
             else:
                 NOBUYSubjectToentry = NOBUYSubjectTo1
@@ -5659,7 +5659,7 @@ def Status(request, IPOid):
             BUYSubjectToentry = SubjectToentry.filter(OrderType="BUY")
             BUYSubjectToentry11 = BUYSubjectToentry.aggregate(Sum("Amount"))
             BUYSubjectToentry1 = BUYSubjectToentry11["Amount__sum"]
-            if BUYSubjectToentry1 == None:
+            if BUYSubjectToentry1 is None:
                 BUYSubjectToentrytotal = 0
             else:
                 BUYSubjectToentrytotal = BUYSubjectToentry1
@@ -5667,7 +5667,7 @@ def Status(request, IPOid):
             NOSELLSubjectTo = SubjectToentry.filter(OrderType="SELL")
             NOSELLSubjectTo11 = NOSELLSubjectTo.aggregate(Sum("Quantity"))
             NOSELLSubjectTo1 = NOSELLSubjectTo11["Quantity__sum"]
-            if NOSELLSubjectTo1 == None:
+            if NOSELLSubjectTo1 is None:
                 NOSELLSubjectToentry = 0
             else:
                 NOSELLSubjectToentry = NOSELLSubjectTo1
@@ -5676,7 +5676,7 @@ def Status(request, IPOid):
             SELLSubjectToentry = SubjectToentry.filter(OrderType="SELL")
             SELLSubjectToentry11 = SELLSubjectToentry.aggregate(Sum("Amount"))
             SELLSubjectToentry1 = SELLSubjectToentry11["Amount__sum"]
-            if SELLSubjectToentry1 == None:
+            if SELLSubjectToentry1 is None:
                 SELLSubjectToentrytotal = 0
             else:
                 SELLSubjectToentrytotal = SELLSubjectToentry1
@@ -5704,7 +5704,7 @@ def Status(request, IPOid):
                 Sum("AllotedQty")
             )
             SubjectToAllotedShare = SubjectToAllotedShare11["AllotedQty__sum"]
-            if SubjectToAllotedShare == None:
+            if SubjectToAllotedShare is None:
                 SubjectToBuyAllotedShare = 0
             else:
                 SubjectToBuyAllotedShare = SubjectToAllotedShare
@@ -5718,7 +5718,7 @@ def Status(request, IPOid):
             )
             KostakAllotedShare11 = KostakAllotedShare1.aggregate(Sum("AllotedQty"))
             KostakAllotedShare = KostakAllotedShare11["AllotedQty__sum"]
-            if KostakAllotedShare == None:
+            if KostakAllotedShare is None:
                 KostakBuyAllotedShare = 0
             else:
                 KostakBuyAllotedShare = KostakAllotedShare
@@ -5734,7 +5734,7 @@ def Status(request, IPOid):
                 Sum("AllotedQty")
             )
             SubjectToAllotedShare = SubjectToAllotedShare11["AllotedQty__sum"]
-            if SubjectToAllotedShare == None:
+            if SubjectToAllotedShare is None:
                 SubjectToSellAllotedShare = 0
             else:
                 SubjectToSellAllotedShare = SubjectToAllotedShare
@@ -5748,7 +5748,7 @@ def Status(request, IPOid):
             )
             KostakAllotedShare11 = KostakAllotedShare1.aggregate(Sum("AllotedQty"))
             KostakAllotedShare = KostakAllotedShare11["AllotedQty__sum"]
-            if KostakAllotedShare == None:
+            if KostakAllotedShare is None:
                 KostakSellAllotedShare = 0
             else:
                 KostakSellAllotedShare = KostakAllotedShare
@@ -5779,21 +5779,21 @@ def Status(request, IPOid):
             SAvgRate = SELLPRODUCTS.aggregate(Avg("Rate"))
             STtotalQty = SELLPRODUCTS.aggregate(Sum("Quantity"))
             STtotalAmount = SELLPRODUCTS.aggregate(Sum("Amount"))
-            if STtotalQty["Quantity__sum"] != None:
+            if STtotalQty["Quantity__sum"] is not None:
                 STotalQty = STtotalQty["Quantity__sum"]
             else:
                 STotalQty = 0
-            if BTtotalQty["Quantity__sum"] != None:
+            if BTtotalQty["Quantity__sum"] is not None:
                 BTotalQty = BTtotalQty["Quantity__sum"]
             else:
                 BTotalQty = 0
 
             TtotalQtypremiumv = BTotalQty - STotalQty
-            if BTtotalAmount["Amount__sum"] != None:
+            if BTtotalAmount["Amount__sum"] is not None:
                 BTotalAmount = BTtotalAmount["Amount__sum"]
             else:
                 BTotalAmount = 0
-            if STtotalAmount["Amount__sum"] != None:
+            if STtotalAmount["Amount__sum"] is not None:
                 STotalAmount = STtotalAmount["Amount__sum"]
             else:
                 STotalAmount = 0
@@ -6096,7 +6096,7 @@ def Status(request, IPOid):
                     )
                     b = a.aggregate(Sum("Quantity"))
                     BuyEntryCount = b["Quantity__sum"]
-                    if BuyEntryCount == None:
+                    if BuyEntryCount is None:
                         BuyEntryCount = 0
 
                     BuyAllotedCount = orderdetail.filter(
@@ -6110,7 +6110,7 @@ def Status(request, IPOid):
 
                     d = a.aggregate(Sum("Amount"))
                     BuyEntryTotal = d["Amount__sum"]
-                    if BuyEntryTotal == None:
+                    if BuyEntryTotal is None:
                         BuyEntryTotal = 0
 
                     a1 = entry.filter(
@@ -6118,7 +6118,7 @@ def Status(request, IPOid):
                     )
                     b1 = a1.aggregate(Sum("Quantity"))
                     SellEntryCount = b1["Quantity__sum"]
-                    if SellEntryCount == None:
+                    if SellEntryCount is None:
                         SellEntryCount = 0
 
                     SellAllotedCount = orderdetail.filter(
@@ -6132,7 +6132,7 @@ def Status(request, IPOid):
 
                     d1 = a1.aggregate(Sum("Amount"))
                     SellEntryTotal = d1["Amount__sum"]
-                    if SellEntryTotal == None:
+                    if SellEntryTotal is None:
                         SellEntryTotal = 0
 
                     EntryCount = BuyEntryCount - SellEntryCount
@@ -6214,12 +6214,12 @@ def Status(request, IPOid):
             )
             b3 = a3.aggregate(Sum("Quantity"))
             BuyPremiumShares = b3["Quantity__sum"]
-            if BuyPremiumShares == None:
+            if BuyPremiumShares is None:
                 BuyPremiumShares = 0
 
             c3 = a3.aggregate(Sum("Amount"))
             BuyPremiumAmount = c3["Amount__sum"]
-            if BuyPremiumAmount == None:
+            if BuyPremiumAmount is None:
                 BuyPremiumAmount = 0
 
             a4 = entry.filter(
@@ -6230,12 +6230,12 @@ def Status(request, IPOid):
             )
             b4 = a4.aggregate(Sum("Quantity"))
             SellPremiumShares = b4["Quantity__sum"]
-            if SellPremiumShares == None:
+            if SellPremiumShares is None:
                 SellPremiumShares = 0
 
             c4 = a4.aggregate(Sum("Amount"))
             SellPremiumAmount = c4["Amount__sum"]
-            if SellPremiumAmount == None:
+            if SellPremiumAmount is None:
                 SellPremiumAmount = 0
 
             PremiumSharesTotal = BuyPremiumShares - SellPremiumShares
@@ -6256,7 +6256,7 @@ def Status(request, IPOid):
             )
             c5 = Call_Buy.aggregate(Sum("Amount"))
             Call_BuyAmount = c5["Amount__sum"]
-            if Call_BuyAmount == None:
+            if Call_BuyAmount is None:
                 Call_BuyAmount = 0
 
             Call_Sell = entry.filter(
@@ -6267,7 +6267,7 @@ def Status(request, IPOid):
             )
             c6 = Call_Sell.aggregate(Sum("Amount"))
             Call_SellAmount = c6["Amount__sum"]
-            if Call_SellAmount == None:
+            if Call_SellAmount is None:
                 Call_SellAmount = 0
 
             CallBillingTotal = Call_BuyAmount + Call_SellAmount
@@ -6283,7 +6283,7 @@ def Status(request, IPOid):
             )
             c7 = Put_Buy.aggregate(Sum("Amount"))
             Put_BuyAmount = c7["Amount__sum"]
-            if Put_BuyAmount == None:
+            if Put_BuyAmount is None:
                 Put_BuyAmount = 0
 
             Put_Sell = entry.filter(
@@ -6294,7 +6294,7 @@ def Status(request, IPOid):
             )
             c8 = Put_Sell.aggregate(Sum("Amount"))
             Put_SellAmount = c8["Amount__sum"]
-            if Put_SellAmount == None:
+            if Put_SellAmount is None:
                 Put_SellAmount = 0
 
             PutBillingTotal = Put_BuyAmount + Put_SellAmount
@@ -6310,17 +6310,17 @@ def Status(request, IPOid):
             RetailKostakBuyShares = x.filter(Order__InvestorType="RETAIL").aggregate(
                 Sum("AllotedQty")
             )["AllotedQty__sum"]
-            if RetailKostakBuyShares == None:
+            if RetailKostakBuyShares is None:
                 RetailKostakBuyShares = 0
             SHNIKostakBuyShares = x.filter(Order__InvestorType="SHNI").aggregate(
                 Sum("AllotedQty")
             )["AllotedQty__sum"]
-            if SHNIKostakBuyShares == None:
+            if SHNIKostakBuyShares is None:
                 SHNIKostakBuyShares = 0
             BHNIKostakBuyShares = x.filter(Order__InvestorType="BHNI").aggregate(
                 Sum("AllotedQty")
             )["AllotedQty__sum"]
-            if BHNIKostakBuyShares == None:
+            if BHNIKostakBuyShares is None:
                 BHNIKostakBuyShares = 0
 
             x1 = y.filter(Order__OrderType="BUY", Order__OrderCategory="Subject To")
@@ -6328,17 +6328,17 @@ def Status(request, IPOid):
             RetailSubjectToBuyShares = x1.filter(
                 Order__InvestorType="RETAIL"
             ).aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
-            if RetailSubjectToBuyShares == None:
+            if RetailSubjectToBuyShares is None:
                 RetailSubjectToBuyShares = 0
             SHNISubjectToBuyShares = x1.filter(Order__InvestorType="SHNI").aggregate(
                 Sum("AllotedQty")
             )["AllotedQty__sum"]
-            if SHNISubjectToBuyShares == None:
+            if SHNISubjectToBuyShares is None:
                 SHNISubjectToBuyShares = 0
             BHNISubjectToBuyShares = x1.filter(Order__InvestorType="BHNI").aggregate(
                 Sum("AllotedQty")
             )["AllotedQty__sum"]
-            if BHNISubjectToBuyShares == None:
+            if BHNISubjectToBuyShares is None:
                 BHNISubjectToBuyShares = 0
 
             x3 = y.filter(Order__OrderType="SELL", Order__OrderCategory="Kostak")
@@ -6346,17 +6346,17 @@ def Status(request, IPOid):
             RetailKostakSellShares = x3.filter(Order__InvestorType="RETAIL").aggregate(
                 Sum("AllotedQty")
             )["AllotedQty__sum"]
-            if RetailKostakSellShares == None:
+            if RetailKostakSellShares is None:
                 RetailKostakSellShares = 0
             SHNIKostakSellShares = x3.filter(Order__InvestorType="SHNI").aggregate(
                 Sum("AllotedQty")
             )["AllotedQty__sum"]
-            if SHNIKostakSellShares == None:
+            if SHNIKostakSellShares is None:
                 SHNIKostakSellShares = 0
             BHNIKostakSellShares = x3.filter(Order__InvestorType="BHNI").aggregate(
                 Sum("AllotedQty")
             )["AllotedQty__sum"]
-            if BHNIKostakSellShares == None:
+            if BHNIKostakSellShares is None:
                 BHNIKostakSellShares = 0
 
             x4 = y.filter(Order__OrderType="SELL", Order__OrderCategory="Subject To")
@@ -6364,17 +6364,17 @@ def Status(request, IPOid):
             RetailSubjectToSellShares = x4.filter(
                 Order__InvestorType="RETAIL"
             ).aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
-            if RetailSubjectToSellShares == None:
+            if RetailSubjectToSellShares is None:
                 RetailSubjectToSellShares = 0
             SHNISubjectToSellShares = x4.filter(Order__InvestorType="SHNI").aggregate(
                 Sum("AllotedQty")
             )["AllotedQty__sum"]
-            if SHNISubjectToSellShares == None:
+            if SHNISubjectToSellShares is None:
                 SHNISubjectToSellShares = 0
             BHNISubjectToSellShares = x4.filter(Order__InvestorType="BHNI").aggregate(
                 Sum("AllotedQty")
             )["AllotedQty__sum"]
-            if BHNISubjectToSellShares == None:
+            if BHNISubjectToSellShares is None:
                 BHNISubjectToSellShares = 0
 
             KostakRetailBuyShares.append(RetailKostakBuyShares)
@@ -6729,7 +6729,7 @@ def GroupWiseDashboard(request):
     page_obj = None
     try:
         page_size = request.POST.get("GWD_page_size")
-        if page_size != "" and page_size != None:
+        if page_size != "" and page_size is not None:
             request.session["GWD_page_size"] = page_size
         else:
             page_size = request.session["GWD_page_size"]
@@ -6993,7 +6993,7 @@ def BackUp(request):
     page_obj = None
     try:
         page_size = request.POST.get("Backup_page_size")
-        if page_size != "" and page_size != None:
+        if page_size != "" and page_size is not None:
             request.session["Backup_page_size"] = page_size
         else:
             page_size = request.session["Backup_page_size"]
@@ -7600,14 +7600,14 @@ def Billing(request, IPOid):
 
     Total1 = order.aggregate(Sum("Amount"))
     Total = Total1["Amount__sum"]
-    if Total == None:
+    if Total is None:
         Total = 0
     else:
         Total = Total
     totalorder = total + Total
     Total1 = entry.aggregate(Sum("Amount"))
     Total = Total1["Amount__sum"]
-    if Total == None:
+    if Total is None:
         Total = 0
     total = total + Total
     total = total + totalorder
@@ -7647,14 +7647,14 @@ def Billing(request, IPOid):
             order = order.filter(InvestorType=InvestorTypeFilter)
         Total1 = order.aggregate(Sum("Amount"))
         Total = Total1["Amount__sum"]
-        if Total == None:
+        if Total is None:
             Total = 0
         else:
             Total = Total
         totalorder = total + Total
         Total1 = entry.aggregate(Sum("Amount"))
         Total = Total1["Amount__sum"]
-        if Total == None:
+        if Total is None:
             Total = 0
         total = total + Total
         total = total + totalorder
@@ -7662,7 +7662,7 @@ def Billing(request, IPOid):
     page_obj = None
     try:
         page_size = request.POST.get("Billing_page_size")
-        if page_size != "" and page_size != None:
+        if page_size != "" and page_size is not None:
             request.session["Billing_page_size"] = page_size
         else:
             page_size = request.session["Billing_page_size"]
@@ -7917,14 +7917,14 @@ def FileterBilling(request, IPOid, group, IPOType, InvestType):
         order = order.filter(InvestorType=InvestorTypeFilter)
     Total1 = order.aggregate(Sum("Amount"))
     Total = Total1["Amount__sum"]
-    if Total == None:
+    if Total is None:
         Total = 0
     else:
         Total = Total
     totalorder = total + Total
     Total1 = entry.aggregate(Sum("Amount"))
     Total = Total1["Amount__sum"]
-    if Total == None:
+    if Total is None:
         Total = 0
     total = total + Total
     total = total + totalorder
@@ -7932,7 +7932,7 @@ def FileterBilling(request, IPOid, group, IPOType, InvestType):
     page_obj = None
     try:
         page_size = request.POST.get("Billing_page_size")
-        if page_size != "" and page_size != None:
+        if page_size != "" and page_size is not None:
             request.session["Billing_page_size"] = page_size
         else:
             page_size = request.session["Billing_page_size"]
@@ -8523,14 +8523,14 @@ def exportBillingFilterpdf(request, IPOid, group=None, IPOType=None, InvestorTyp
     total = 0
     Total1 = order.aggregate(Sum("Amount"))
     Total = Total1["Amount__sum"]
-    if Total == None:
+    if Total is None:
         Total = 0
     else:
         Total = Total
     totalorder = total + Total
     Total1 = entry.aggregate(Sum("Amount"))
     Total = Total1["Amount__sum"]
-    if Total == None:
+    if Total is None:
         Total = 0
     total = total + Total
     total = total + totalorder
@@ -9129,11 +9129,11 @@ def export(
             gid = GroupDetail.objects.get(id=request.user.Group_id).id
             entry = entry.filter(Order__OrderGroup_id=gid)
 
-    if OrderDate != None and OrderDate != "None":
+    if OrderDate is not None and OrderDate != "None":
         OrderDate = OrderDate[0:4] + "-" + OrderDate[4:6] + "-" + OrderDate[6:8]
         entry = entry.filter(Order__OrderDate=OrderDate)
 
-    if OrderTime != None and OrderTime != "None":
+    if OrderTime is not None and OrderTime != "None":
         OrderTime = OrderTime[0:2] + ":" + OrderTime[2:4] + ":" + OrderTime[4:6]
         entry = entry.filter(Order__OrderTime=OrderTime)
 
@@ -9236,11 +9236,11 @@ def Group_wise_export(
             entry = entry.filter(user=request.user.Broker_id)
 
         # Apply additional filters if provided
-        if OrderDate != None and OrderDate != "None":
+        if OrderDate is not None and OrderDate != "None":
             OrderDate = OrderDate[0:4] + "-" + OrderDate[4:6] + "-" + OrderDate[6:8]
             entry = entry.filter(Order__OrderDate=OrderDate)
 
-        if OrderTime != None and OrderTime != "None":
+        if OrderTime is not None and OrderTime != "None":
             OrderTime = OrderTime[0:2] + ":" + OrderTime[2:4] + ":" + OrderTime[4:6]
             entry = entry.filter(Order__OrderTime=OrderTime)
 
@@ -9357,11 +9357,11 @@ def exportall(
             gid = GroupDetail.objects.get(id=request.user.Group_id).id
             entry = entry.filter(Order__OrderGroup_id=gid)
 
-    if OrderDate != None and OrderDate != "None":
+    if OrderDate is not None and OrderDate != "None":
         OrderDate = OrderDate[0:4] + "-" + OrderDate[4:6] + "-" + OrderDate[6:8]
         entry = entry.filter(Order__OrderDate=OrderDate)
 
-    if OrderTime != None and OrderTime != "None":
+    if OrderTime is not None and OrderTime != "None":
         OrderTime = OrderTime[0:2] + ":" + OrderTime[2:4] + ":" + OrderTime[4:6]
         entry = entry.filter(Order__OrderTime=OrderTime)
 
@@ -9465,11 +9465,11 @@ def Group_wise_exportall(
             entry = entry.filter(user=request.user.Broker_id)
 
         # Apply additional filters if provided
-        if OrderDate != None and OrderDate != "None":
+        if OrderDate is not None and OrderDate != "None":
             OrderDate = OrderDate[0:4] + "-" + OrderDate[4:6] + "-" + OrderDate[6:8]
             entry = entry.filter(Order__OrderDate=OrderDate)
 
-        if OrderTime != None and OrderTime != "None":
+        if OrderTime is not None and OrderTime != "None":
             OrderTime = OrderTime[0:2] + ":" + OrderTime[2:4] + ":" + OrderTime[4:6]
             entry = entry.filter(Order__OrderTime=OrderTime)
 
@@ -10361,7 +10361,7 @@ def dashboard(request, IPOid, value):
             ).aggregate(Sum("AllotedQty"))
             ActualallottedQtyBuy = ActualallottedQtyBuy["AllotedQty__sum"]
 
-            if ActualallottedQtyBuy == None:
+            if ActualallottedQtyBuy is None:
                 ActualallottedQtyBuy = 0
 
             ActualallottedQtySell = OrderDetail.objects.filter(
@@ -10369,7 +10369,7 @@ def dashboard(request, IPOid, value):
             ).aggregate(Sum("AllotedQty"))
             ActualallottedQtySell = ActualallottedQtySell["AllotedQty__sum"]
 
-            if ActualallottedQtySell == None:
+            if ActualallottedQtySell is None:
                 ActualallottedQtySell = 0
 
             ActualallottedQty = ActualallottedQtyBuy - ActualallottedQtySell
@@ -10377,11 +10377,11 @@ def dashboard(request, IPOid, value):
             IPO = CurrentIpoName.objects.get(id=IPOid, user=request.user)
             try:
                 IPOPremium = float(IPO.Premium)
-                if IPOPremium == None:
+                if IPOPremium is None:
                     IPOPremium = 0
             except:
                 IPOPremium = 0
-            if IPO.ProfitMargin == None:
+            if IPO.ProfitMargin is None:
                 IPO.ProfitMargin = 15
             IPO.save()
             try:
@@ -10438,7 +10438,7 @@ def dashboard(request, IPOid, value):
             NOBUYKostak = Kostakentry.filter(OrderType="BUY")
             NOBUYKostak11 = NOBUYKostak.aggregate(Sum("Quantity"))
             NOBUYKostak1 = NOBUYKostak11["Quantity__sum"]
-            if NOBUYKostak1 == None:
+            if NOBUYKostak1 is None:
                 CountofBUYKostak = 0
             else:
                 CountofBUYKostak = NOBUYKostak1
@@ -10447,7 +10447,7 @@ def dashboard(request, IPOid, value):
             NOSELLKostak = Kostakentry.filter(OrderType="SELL")
             NOSELLKostak11 = NOSELLKostak.aggregate(Sum("Quantity"))
             NOSELLKostak1 = NOSELLKostak11["Quantity__sum"]
-            if NOSELLKostak1 == None:
+            if NOSELLKostak1 is None:
                 CountofSELLKostak = 0
             else:
                 CountofSELLKostak = NOSELLKostak1
@@ -10461,7 +10461,7 @@ def dashboard(request, IPOid, value):
             AmountBUYKostak = Kostakentry.filter(OrderType="BUY")
             AmountBUYKostak11 = AmountBUYKostak.aggregate(Sum("Amount"))
             AmountBUYKostak1 = AmountBUYKostak11["Amount__sum"]
-            if AmountBUYKostak1 == None:
+            if AmountBUYKostak1 is None:
                 AmountofBUYKostak = 0
             else:
                 AmountofBUYKostak = AmountBUYKostak1
@@ -10470,7 +10470,7 @@ def dashboard(request, IPOid, value):
             AmountSELLKostak = Kostakentry.filter(OrderType="SELL")
             AmountSELLKostak11 = AmountSELLKostak.aggregate(Sum("Amount"))
             AmountSELLKostak1 = AmountSELLKostak11["Amount__sum"]
-            if AmountSELLKostak1 == None:
+            if AmountSELLKostak1 is None:
                 AmountofSELLKostak = 0
             else:
                 AmountofSELLKostak = AmountSELLKostak1
@@ -10487,7 +10487,7 @@ def dashboard(request, IPOid, value):
             NOBUYSubjectTo = SubjectToentry.filter(OrderType="BUY")
             NOBUYSubjectTo11 = NOBUYSubjectTo.aggregate(Sum("Quantity"))
             NOBUYSubjectTo1 = NOBUYSubjectTo11["Quantity__sum"]
-            if NOBUYSubjectTo1 == None:
+            if NOBUYSubjectTo1 is None:
                 CountofBUYSubjectTo = 0
             else:
                 CountofBUYSubjectTo = NOBUYSubjectTo1
@@ -10496,7 +10496,7 @@ def dashboard(request, IPOid, value):
             NOSELLSubjectTo = SubjectToentry.filter(OrderType="SELL")
             NOSELLSubjectTo11 = NOSELLSubjectTo.aggregate(Sum("Quantity"))
             NOSELLSubjectTo1 = NOSELLSubjectTo11["Quantity__sum"]
-            if NOSELLSubjectTo1 == None:
+            if NOSELLSubjectTo1 is None:
                 CountofSELLSubjectTo = 0
             else:
                 CountofSELLSubjectTo = NOSELLSubjectTo1
@@ -10519,7 +10519,7 @@ def dashboard(request, IPOid, value):
             AmountBUYSubjectTo = SubjectToentry.filter(OrderType="BUY")
             AmountBUYSubjectTo11 = AmountBUYSubjectTo.aggregate(Sum("Amount"))
             AmountBUYSubjectTo1 = AmountBUYSubjectTo11["Amount__sum"]
-            if AmountBUYSubjectTo1 == None:
+            if AmountBUYSubjectTo1 is None:
                 AmountofBUYSubjectTo = 0
             else:
                 AmountofBUYSubjectTo = AmountBUYSubjectTo1
@@ -10528,7 +10528,7 @@ def dashboard(request, IPOid, value):
             AmountSELLSubjectTo = SubjectToentry.filter(OrderType="SELL")
             AmountSELLSubjectTo11 = AmountSELLSubjectTo.aggregate(Sum("Amount"))
             AmountSELLSubjectTo1 = AmountSELLSubjectTo11["Amount__sum"]
-            if AmountSELLSubjectTo1 == None:
+            if AmountSELLSubjectTo1 is None:
                 AmountofSELLSubjectTo = 0
             else:
                 AmountofSELLSubjectTo = AmountSELLSubjectTo1
@@ -10550,7 +10550,7 @@ def dashboard(request, IPOid, value):
             QTYBUYPremium = Premiumentry.filter(OrderType="BUY")
             QTYBUYPremium11 = QTYBUYPremium.aggregate(Sum("Quantity"))
             QTYBUYPremium1 = QTYBUYPremium11["Quantity__sum"]
-            if QTYBUYPremium1 == None:
+            if QTYBUYPremium1 is None:
                 TotalBuyPremiumShareQty = 0
             else:
                 TotalBuyPremiumShareQty = QTYBUYPremium1
@@ -10559,7 +10559,7 @@ def dashboard(request, IPOid, value):
             QTYSELLPremium = Premiumentry.filter(OrderType="SELL")
             QTYSELLPremium11 = QTYSELLPremium.aggregate(Sum("Quantity"))
             QTYSELLPremium1 = QTYSELLPremium11["Quantity__sum"]
-            if QTYSELLPremium1 == None:
+            if QTYSELLPremium1 is None:
                 TotalSellPremiumShareQty = 0
             else:
                 TotalSellPremiumShareQty = QTYSELLPremium1
@@ -10579,7 +10579,7 @@ def dashboard(request, IPOid, value):
             AmountBUYPremium = Premiumentry.filter(OrderType="BUY")
             AmountBUYPremium11 = AmountBUYPremium.aggregate(Sum("Amount"))
             AmountBUYPremium1 = AmountBUYPremium11["Amount__sum"]
-            if AmountBUYPremium1 == None:
+            if AmountBUYPremium1 is None:
                 TotalBuyPremiumShareAmount = 0
             else:
                 TotalBuyPremiumShareAmount = AmountBUYPremium1
@@ -10588,7 +10588,7 @@ def dashboard(request, IPOid, value):
             AmountSELLPremium = Premiumentry.filter(OrderType="SELL")
             AmountSELLPremium11 = AmountSELLPremium.aggregate(Sum("Amount"))
             AmountSELLPremium1 = AmountSELLPremium11["Amount__sum"]
-            if AmountSELLPremium1 == None:
+            if AmountSELLPremium1 is None:
                 TotalSellPremiumShareAmount = 0
             else:
                 TotalSellPremiumShareAmount = AmountSELLPremium1
@@ -10666,7 +10666,7 @@ def dashboard(request, IPOid, value):
             ).aggregate(Sum("AllotedQty"))
             ActualallottedQtyBuy = ActualallottedQtyBuy["AllotedQty__sum"]
 
-            if ActualallottedQtyBuy == None:
+            if ActualallottedQtyBuy is None:
                 ActualallottedQtyBuy = 0
 
             ActualallottedQtySell = OrderDetail.objects.filter(
@@ -10674,7 +10674,7 @@ def dashboard(request, IPOid, value):
             ).aggregate(Sum("AllotedQty"))
             ActualallottedQtySell = ActualallottedQtySell["AllotedQty__sum"]
 
-            if ActualallottedQtySell == None:
+            if ActualallottedQtySell is None:
                 ActualallottedQtySell = 0
 
             ActualallottedQty = ActualallottedQtyBuy - ActualallottedQtySell
@@ -10684,9 +10684,9 @@ def dashboard(request, IPOid, value):
                 IPOPremium = float(IPO.Premium)
             except:
                 IPOPremium = 0
-            if IPO.ProfitMargin == None:
+            if IPO.ProfitMargin is None:
                 IPO.ProfitMargin = 15
-            if IPO.ExpecetdRetailApplication == None:
+            if IPO.ExpecetdRetailApplication is None:
                 IPO.ExpecetdRetailApplication = 2500000
             IPO.save()
             try:
@@ -10743,7 +10743,7 @@ def dashboard(request, IPOid, value):
             NOBUYKostak = Kostakentry.filter(OrderType="BUY")
             NOBUYKostak11 = NOBUYKostak.aggregate(Sum("Quantity"))
             NOBUYKostak1 = NOBUYKostak11["Quantity__sum"]
-            if NOBUYKostak1 == None:
+            if NOBUYKostak1 is None:
                 CountofBUYKostak = 0
             else:
                 CountofBUYKostak = NOBUYKostak1
@@ -10752,7 +10752,7 @@ def dashboard(request, IPOid, value):
             NOSELLKostak = Kostakentry.filter(OrderType="SELL")
             NOSELLKostak11 = NOSELLKostak.aggregate(Sum("Quantity"))
             NOSELLKostak1 = NOSELLKostak11["Quantity__sum"]
-            if NOSELLKostak1 == None:
+            if NOSELLKostak1 is None:
                 CountofSELLKostak = 0
             else:
                 CountofSELLKostak = NOSELLKostak1
@@ -10766,7 +10766,7 @@ def dashboard(request, IPOid, value):
             AmountBUYKostak = Kostakentry.filter(OrderType="BUY")
             AmountBUYKostak11 = AmountBUYKostak.aggregate(Sum("Amount"))
             AmountBUYKostak1 = AmountBUYKostak11["Amount__sum"]
-            if AmountBUYKostak1 == None:
+            if AmountBUYKostak1 is None:
                 AmountofBUYKostak = 0
             else:
                 AmountofBUYKostak = AmountBUYKostak1
@@ -10775,7 +10775,7 @@ def dashboard(request, IPOid, value):
             AmountSELLKostak = Kostakentry.filter(OrderType="SELL")
             AmountSELLKostak11 = AmountSELLKostak.aggregate(Sum("Amount"))
             AmountSELLKostak1 = AmountSELLKostak11["Amount__sum"]
-            if AmountSELLKostak1 == None:
+            if AmountSELLKostak1 is None:
                 AmountofSELLKostak = 0
             else:
                 AmountofSELLKostak = AmountSELLKostak1
@@ -10792,7 +10792,7 @@ def dashboard(request, IPOid, value):
             NOBUYSubjectTo = SubjectToentry.filter(OrderType="BUY")
             NOBUYSubjectTo11 = NOBUYSubjectTo.aggregate(Sum("Quantity"))
             NOBUYSubjectTo1 = NOBUYSubjectTo11["Quantity__sum"]
-            if NOBUYSubjectTo1 == None:
+            if NOBUYSubjectTo1 is None:
                 CountofBUYSubjectTo = 0
             else:
                 CountofBUYSubjectTo = NOBUYSubjectTo1
@@ -10801,7 +10801,7 @@ def dashboard(request, IPOid, value):
             NOSELLSubjectTo = SubjectToentry.filter(OrderType="SELL")
             NOSELLSubjectTo11 = NOSELLSubjectTo.aggregate(Sum("Quantity"))
             NOSELLSubjectTo1 = NOSELLSubjectTo11["Quantity__sum"]
-            if NOSELLSubjectTo1 == None:
+            if NOSELLSubjectTo1 is None:
                 CountofSELLSubjectTo = 0
             else:
                 CountofSELLSubjectTo = NOSELLSubjectTo1
@@ -10824,7 +10824,7 @@ def dashboard(request, IPOid, value):
             AmountBUYSubjectTo = SubjectToentry.filter(OrderType="BUY")
             AmountBUYSubjectTo11 = AmountBUYSubjectTo.aggregate(Sum("Amount"))
             AmountBUYSubjectTo1 = AmountBUYSubjectTo11["Amount__sum"]
-            if AmountBUYSubjectTo1 == None:
+            if AmountBUYSubjectTo1 is None:
                 AmountofBUYSubjectTo = 0
             else:
                 AmountofBUYSubjectTo = AmountBUYSubjectTo1
@@ -10833,7 +10833,7 @@ def dashboard(request, IPOid, value):
             AmountSELLSubjectTo = SubjectToentry.filter(OrderType="SELL")
             AmountSELLSubjectTo11 = AmountSELLSubjectTo.aggregate(Sum("Amount"))
             AmountSELLSubjectTo1 = AmountSELLSubjectTo11["Amount__sum"]
-            if AmountSELLSubjectTo1 == None:
+            if AmountSELLSubjectTo1 is None:
                 AmountofSELLSubjectTo = 0
             else:
                 AmountofSELLSubjectTo = AmountSELLSubjectTo1
@@ -10855,7 +10855,7 @@ def dashboard(request, IPOid, value):
             QTYBUYPremium = Premiumentry.filter(OrderType="BUY")
             QTYBUYPremium11 = QTYBUYPremium.aggregate(Sum("Quantity"))
             QTYBUYPremium1 = QTYBUYPremium11["Quantity__sum"]
-            if QTYBUYPremium1 == None:
+            if QTYBUYPremium1 is None:
                 TotalBuyPremiumShareQty = 0
             else:
                 TotalBuyPremiumShareQty = QTYBUYPremium1
@@ -10864,7 +10864,7 @@ def dashboard(request, IPOid, value):
             QTYSELLPremium = Premiumentry.filter(OrderType="SELL")
             QTYSELLPremium11 = QTYSELLPremium.aggregate(Sum("Quantity"))
             QTYSELLPremium1 = QTYSELLPremium11["Quantity__sum"]
-            if QTYSELLPremium1 == None:
+            if QTYSELLPremium1 is None:
                 TotalSellPremiumShareQty = 0
             else:
                 TotalSellPremiumShareQty = QTYSELLPremium1
@@ -10883,7 +10883,7 @@ def dashboard(request, IPOid, value):
             AmountBUYPremium = Premiumentry.filter(OrderType="BUY")
             AmountBUYPremium11 = AmountBUYPremium.aggregate(Sum("Amount"))
             AmountBUYPremium1 = AmountBUYPremium11["Amount__sum"]
-            if AmountBUYPremium1 == None:
+            if AmountBUYPremium1 is None:
                 TotalBuyPremiumShareAmount = 0
             else:
                 TotalBuyPremiumShareAmount = AmountBUYPremium1
@@ -10892,7 +10892,7 @@ def dashboard(request, IPOid, value):
             AmountSELLPremium = Premiumentry.filter(OrderType="SELL")
             AmountSELLPremium11 = AmountSELLPremium.aggregate(Sum("Amount"))
             AmountSELLPremium1 = AmountSELLPremium11["Amount__sum"]
-            if AmountSELLPremium1 == None:
+            if AmountSELLPremium1 is None:
                 TotalSellPremiumShareAmount = 0
             else:
                 TotalSellPremiumShareAmount = AmountSELLPremium1
@@ -10956,9 +10956,9 @@ def dashboard(request, IPOid, value):
             IPOPremium = float(IPO.Premium)
         except:
             IPOPremium = 0
-        if IPO.ProfitMargin == None:
+        if IPO.ProfitMargin is None:
             IPO.ProfitMargin = 15
-        if IPO.ExpecetdRetailApplication == None:
+        if IPO.ExpecetdRetailApplication is None:
             IPO.ExpecetdRetailApplication = 2500000
         IPO.save()
         try:
@@ -11013,7 +11013,7 @@ def dashboard(request, IPOid, value):
         NOBUYKostak = Kostakentry.filter(OrderType="BUY")
         NOBUYKostak11 = NOBUYKostak.aggregate(Sum("Quantity"))
         NOBUYKostak1 = NOBUYKostak11["Quantity__sum"]
-        if NOBUYKostak1 == None:
+        if NOBUYKostak1 is None:
             CountofBUYKostak = 0
         else:
             CountofBUYKostak = NOBUYKostak1
@@ -11022,7 +11022,7 @@ def dashboard(request, IPOid, value):
         NOSELLKostak = Kostakentry.filter(OrderType="SELL")
         NOSELLKostak11 = NOSELLKostak.aggregate(Sum("Quantity"))
         NOSELLKostak1 = NOSELLKostak11["Quantity__sum"]
-        if NOSELLKostak1 == None:
+        if NOSELLKostak1 is None:
             CountofSELLKostak = 0
         else:
             CountofSELLKostak = NOSELLKostak1
@@ -11036,7 +11036,7 @@ def dashboard(request, IPOid, value):
         AmountBUYKostak = Kostakentry.filter(OrderType="BUY")
         AmountBUYKostak11 = AmountBUYKostak.aggregate(Sum("Amount"))
         AmountBUYKostak1 = AmountBUYKostak11["Amount__sum"]
-        if AmountBUYKostak1 == None:
+        if AmountBUYKostak1 is None:
             AmountofBUYKostak = 0
         else:
             AmountofBUYKostak = AmountBUYKostak1
@@ -11045,7 +11045,7 @@ def dashboard(request, IPOid, value):
         AmountSELLKostak = Kostakentry.filter(OrderType="SELL")
         AmountSELLKostak11 = AmountSELLKostak.aggregate(Sum("Amount"))
         AmountSELLKostak1 = AmountSELLKostak11["Amount__sum"]
-        if AmountSELLKostak1 == None:
+        if AmountSELLKostak1 is None:
             AmountofSELLKostak = 0
         else:
             AmountofSELLKostak = AmountSELLKostak1
@@ -11062,7 +11062,7 @@ def dashboard(request, IPOid, value):
         NOBUYSubjectTo = SubjectToentry.filter(OrderType="BUY")
         NOBUYSubjectTo11 = NOBUYSubjectTo.aggregate(Sum("Quantity"))
         NOBUYSubjectTo1 = NOBUYSubjectTo11["Quantity__sum"]
-        if NOBUYSubjectTo1 == None:
+        if NOBUYSubjectTo1 is None:
             CountofBUYSubjectTo = 0
         else:
             CountofBUYSubjectTo = NOBUYSubjectTo1
@@ -11071,7 +11071,7 @@ def dashboard(request, IPOid, value):
         NOSELLSubjectTo = SubjectToentry.filter(OrderType="SELL")
         NOSELLSubjectTo11 = NOSELLSubjectTo.aggregate(Sum("Quantity"))
         NOSELLSubjectTo1 = NOSELLSubjectTo11["Quantity__sum"]
-        if NOSELLSubjectTo1 == None:
+        if NOSELLSubjectTo1 is None:
             CountofSELLSubjectTo = 0
         else:
             CountofSELLSubjectTo = NOSELLSubjectTo1
@@ -11094,7 +11094,7 @@ def dashboard(request, IPOid, value):
         AmountBUYSubjectTo = SubjectToentry.filter(OrderType="BUY")
         AmountBUYSubjectTo11 = AmountBUYSubjectTo.aggregate(Sum("Amount"))
         AmountBUYSubjectTo1 = AmountBUYSubjectTo11["Amount__sum"]
-        if AmountBUYSubjectTo1 == None:
+        if AmountBUYSubjectTo1 is None:
             AmountofBUYSubjectTo = 0
         else:
             AmountofBUYSubjectTo = AmountBUYSubjectTo1
@@ -11103,7 +11103,7 @@ def dashboard(request, IPOid, value):
         AmountSELLSubjectTo = SubjectToentry.filter(OrderType="SELL")
         AmountSELLSubjectTo11 = AmountSELLSubjectTo.aggregate(Sum("Amount"))
         AmountSELLSubjectTo1 = AmountSELLSubjectTo11["Amount__sum"]
-        if AmountSELLSubjectTo1 == None:
+        if AmountSELLSubjectTo1 is None:
             AmountofSELLSubjectTo = 0
         else:
             AmountofSELLSubjectTo = AmountSELLSubjectTo1
@@ -11125,7 +11125,7 @@ def dashboard(request, IPOid, value):
         QTYBUYPremium = Premiumentry.filter(OrderType="BUY")
         QTYBUYPremium11 = QTYBUYPremium.aggregate(Sum("Quantity"))
         QTYBUYPremium1 = QTYBUYPremium11["Quantity__sum"]
-        if QTYBUYPremium1 == None:
+        if QTYBUYPremium1 is None:
             TotalBuyPremiumShareQty = 0
         else:
             TotalBuyPremiumShareQty = QTYBUYPremium1
@@ -11134,7 +11134,7 @@ def dashboard(request, IPOid, value):
         QTYSELLPremium = Premiumentry.filter(OrderType="SELL")
         QTYSELLPremium11 = QTYSELLPremium.aggregate(Sum("Quantity"))
         QTYSELLPremium1 = QTYSELLPremium11["Quantity__sum"]
-        if QTYSELLPremium1 == None:
+        if QTYSELLPremium1 is None:
             TotalSellPremiumShareQty = 0
         else:
             TotalSellPremiumShareQty = QTYSELLPremium1
@@ -11154,7 +11154,7 @@ def dashboard(request, IPOid, value):
         AmountBUYPremium = Premiumentry.filter(OrderType="BUY")
         AmountBUYPremium11 = AmountBUYPremium.aggregate(Sum("Amount"))
         AmountBUYPremium1 = AmountBUYPremium11["Amount__sum"]
-        if AmountBUYPremium1 == None:
+        if AmountBUYPremium1 is None:
             TotalBuyPremiumShareAmount = 0
         else:
             TotalBuyPremiumShareAmount = AmountBUYPremium1
@@ -11163,7 +11163,7 @@ def dashboard(request, IPOid, value):
         AmountSELLPremium = Premiumentry.filter(OrderType="SELL")
         AmountSELLPremium11 = AmountSELLPremium.aggregate(Sum("Amount"))
         AmountSELLPremium1 = AmountSELLPremium11["Amount__sum"]
-        if AmountSELLPremium1 == None:
+        if AmountSELLPremium1 is None:
             TotalSellPremiumShareAmount = 0
         else:
             TotalSellPremiumShareAmount = AmountSELLPremium1
@@ -11244,11 +11244,11 @@ def dashboard(request, IPOid, value):
             IPO = CurrentIpoName.objects.get(id=IPOid, user=request.user)
             try:
                 IPOPremium = float(IPO.Premium)
-                if IPOPremium == None:
+                if IPOPremium is None:
                     IPOPremium = 0
             except:
                 IPOPremium = 0
-            if IPO.ProfitMargin == None:
+            if IPO.ProfitMargin is None:
                 IPO.ProfitMargin = 15
             IPO.save()
 
@@ -11313,7 +11313,7 @@ def dashboard(request, IPOid, value):
 
                         count1 = x.aggregate(Sum("Quantity"))["Quantity__sum"]
 
-                        if count1 == None:
+                        if count1 is None:
                             count[f"{ordercategory}{investortype}{ordertype}Count"] = 0
                         else:
                             count[f"{ordercategory}{investortype}{ordertype}Count"] = (
@@ -11328,7 +11328,7 @@ def dashboard(request, IPOid, value):
             x = products.filter(OrderType="BUY", OrderCategory="Premium")
 
             PremiumBUY = x.aggregate(Sum("Quantity"))["Quantity__sum"]
-            if PremiumBUY == None:
+            if PremiumBUY is None:
                 count["PremiumBUYCount"] = 0
             else:
                 count["PremiumBUYCount"] = PremiumBUY
@@ -11336,7 +11336,7 @@ def dashboard(request, IPOid, value):
             y = products.filter(OrderType="SELL", OrderCategory="Premium")
 
             PremiumSELL = y.aggregate(Sum("Quantity"))["Quantity__sum"]
-            if PremiumSELL == None:
+            if PremiumSELL is None:
                 count["PremiumSELLCount"] = 0
             else:
                 count["PremiumSELLCount"] = PremiumSELL
@@ -11369,7 +11369,7 @@ def dashboard(request, IPOid, value):
 
                         quantity = x.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-                        if quantity == None:
+                        if quantity is None:
                             shares[
                                 f"{ordercategory}{investortype}{ordertype}Shares"
                             ] = 0
@@ -11396,7 +11396,7 @@ def dashboard(request, IPOid, value):
             )
 
             AmountSum = products.aggregate(Sum("Amount"))["Amount__sum"]
-            if AmountSum == None:
+            if AmountSum is None:
                 AmountSum = 0
 
             try:
@@ -11410,7 +11410,7 @@ def dashboard(request, IPOid, value):
             y = Qtyfilter.filter(Order__OrderType="BUY", Order__InvestorType="RETAIL")
             qty = y.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qty == None:
+            if qty is None:
                 shares["RETAILBUYAlloted"] = 0
             else:
                 shares["RETAILBUYAlloted"] = qty
@@ -11418,7 +11418,7 @@ def dashboard(request, IPOid, value):
             z = Qtyfilter.filter(Order__OrderType="SELL", Order__InvestorType="RETAIL")
             qtys = z.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qtys == None:
+            if qtys is None:
                 shares["RETAILSELLAlloted"] = 0
             else:
                 shares["RETAILSELLAlloted"] = qtys
@@ -11431,7 +11431,7 @@ def dashboard(request, IPOid, value):
             y1 = Qtyfilter.filter(Order__OrderType="BUY", Order__InvestorType="SHNI")
             qty = y1.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qty == None:
+            if qty is None:
                 shares[f"SHNIBUYAlloted"] = 0
             else:
                 shares[f"SHNIBUYAlloted"] = qty
@@ -11439,7 +11439,7 @@ def dashboard(request, IPOid, value):
             z1 = Qtyfilter.filter(Order__OrderType="SELL", Order__InvestorType="SHNI")
             qty1s = z1.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qty1s == None:
+            if qty1s is None:
                 shares[f"SHNISELLAlloted"] = 0
             else:
                 shares[f"SHNISELLAlloted"] = qty1s
@@ -11450,7 +11450,7 @@ def dashboard(request, IPOid, value):
             y2 = Qtyfilter.filter(Order__OrderType="BUY", Order__InvestorType="BHNI")
             qty2 = y2.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qty2 == None:
+            if qty2 is None:
                 shares[f"BHNIBUYAlloted"] = 0
             else:
                 shares[f"BHNIBUYAlloted"] = qty2
@@ -11458,7 +11458,7 @@ def dashboard(request, IPOid, value):
             z2 = Qtyfilter.filter(Order__OrderType="SELL", Order__InvestorType="BHNI")
             qty2s = z2.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qty2s == None:
+            if qty2s is None:
                 shares[f"BHNISELLAlloted"] = 0
             else:
                 shares[f"BHNISELLAlloted"] = qty2s
@@ -11527,7 +11527,7 @@ def dashboard(request, IPOid, value):
 
                         count1 = x.aggregate(Sum("Quantity"))["Quantity__sum"]
 
-                        if count1 == None:
+                        if count1 is None:
                             count[f"{ordercategory}{investortype}{ordertype}Count"] = 0
                         else:
                             count[f"{ordercategory}{investortype}{ordertype}Count"] = (
@@ -11542,7 +11542,7 @@ def dashboard(request, IPOid, value):
             x = products.filter(OrderType="BUY", OrderCategory="Premium")
 
             PremiumBUY = x.aggregate(Sum("Quantity"))["Quantity__sum"]
-            if PremiumBUY == None:
+            if PremiumBUY is None:
                 count["PremiumBUYCount"] = 0
             else:
                 count["PremiumBUYCount"] = PremiumBUY
@@ -11550,7 +11550,7 @@ def dashboard(request, IPOid, value):
             y = products.filter(OrderType="SELL", OrderCategory="Premium")
 
             PremiumSELL = y.aggregate(Sum("Quantity"))["Quantity__sum"]
-            if PremiumSELL == None:
+            if PremiumSELL is None:
                 count["PremiumSELLCount"] = 0
             else:
                 count["PremiumSELLCount"] = PremiumSELL
@@ -11583,7 +11583,7 @@ def dashboard(request, IPOid, value):
 
                         quantity = x.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-                        if quantity == None:
+                        if quantity is None:
                             shares[
                                 f"{ordercategory}{investortype}{ordertype}Shares"
                             ] = 0
@@ -11610,7 +11610,7 @@ def dashboard(request, IPOid, value):
             )
 
             AmountSum = products.aggregate(Sum("Amount"))["Amount__sum"]
-            if AmountSum == None:
+            if AmountSum is None:
                 AmountSum = 0
 
             try:
@@ -11623,7 +11623,7 @@ def dashboard(request, IPOid, value):
             y = Qtyfilter.filter(Order__OrderType="BUY", Order__InvestorType="RETAIL")
             qty = y.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qty == None:
+            if qty is None:
                 shares["RETAILBUYAlloted"] = 0
             else:
                 shares["RETAILBUYAlloted"] = qty
@@ -11631,7 +11631,7 @@ def dashboard(request, IPOid, value):
             z = Qtyfilter.filter(Order__OrderType="SELL", Order__InvestorType="RETAIL")
             qtys = z.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qtys == None:
+            if qtys is None:
                 shares["RETAILSELLAlloted"] = 0
             else:
                 shares["RETAILSELLAlloted"] = qtys
@@ -11644,7 +11644,7 @@ def dashboard(request, IPOid, value):
             y1 = Qtyfilter.filter(Order__OrderType="BUY", Order__InvestorType="SHNI")
             qty = y1.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qty == None:
+            if qty is None:
                 shares[f"SHNIBUYAlloted"] = 0
             else:
                 shares[f"SHNIBUYAlloted"] = qty
@@ -11652,7 +11652,7 @@ def dashboard(request, IPOid, value):
             z1 = Qtyfilter.filter(Order__OrderType="SELL", Order__InvestorType="SHNI")
             qty1s = z1.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qty1s == None:
+            if qty1s is None:
                 shares[f"SHNISELLAlloted"] = 0
             else:
                 shares[f"SHNISELLAlloted"] = qty1s
@@ -11663,7 +11663,7 @@ def dashboard(request, IPOid, value):
             y2 = Qtyfilter.filter(Order__OrderType="BUY", Order__InvestorType="BHNI")
             qty2 = y2.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qty2 == None:
+            if qty2 is None:
                 shares[f"BHNIBUYAlloted"] = 0
             else:
                 shares[f"BHNIBUYAlloted"] = qty2
@@ -11671,7 +11671,7 @@ def dashboard(request, IPOid, value):
             z2 = Qtyfilter.filter(Order__OrderType="SELL", Order__InvestorType="BHNI")
             qty2s = z2.aggregate(Sum("AllotedQty"))["AllotedQty__sum"]
 
-            if qty2s == None:
+            if qty2s is None:
                 shares[f"BHNISELLAlloted"] = 0
             else:
                 shares[f"BHNISELLAlloted"] = qty2s
@@ -11716,13 +11716,13 @@ def dashboard(request, IPOid, value):
             IPOPremium = float(IPO.Premium)
         except:
             IPOPremium = 0
-        if IPO.ProfitMargin == None:
+        if IPO.ProfitMargin is None:
             IPO.ProfitMargin = 15
         if IPO.ExpecetdRetailApplication == "":
             IPO.ExpecetdRetailApplication = 2500000
-        if IPO.ExpecetdSHNIApplication == None:
+        if IPO.ExpecetdSHNIApplication is None:
             IPO.ExpecetdSHNIApplication = 150000
-        if IPO.ExpecetdBHNIApplication == None:
+        if IPO.ExpecetdBHNIApplication is None:
             IPO.ExpecetdBHNIApplication = 50000
         IPO.save()
 
@@ -11872,7 +11872,7 @@ def dashboard(request, IPOid, value):
 
                     count1 = x.aggregate(Sum("Quantity"))["Quantity__sum"]
 
-                    if count1 == None:
+                    if count1 is None:
                         count[f"{ordercategory}{investortype}{ordertype}Count"] = 0
                     else:
                         count[f"{ordercategory}{investortype}{ordertype}Count"] = count1
@@ -11885,7 +11885,7 @@ def dashboard(request, IPOid, value):
         x = products.filter(OrderType="BUY", OrderCategory="Premium")
 
         PremiumBUY = x.aggregate(Sum("Quantity"))["Quantity__sum"]
-        if PremiumBUY == None:
+        if PremiumBUY is None:
             count["PremiumBUYCount"] = 0
         else:
             count["PremiumBUYCount"] = PremiumBUY
@@ -11893,7 +11893,7 @@ def dashboard(request, IPOid, value):
         y = products.filter(OrderType="SELL", OrderCategory="Premium")
 
         PremiumSELL = y.aggregate(Sum("Quantity"))["Quantity__sum"]
-        if PremiumSELL == None:
+        if PremiumSELL is None:
             count["PremiumSELLCount"] = 0
         else:
             count["PremiumSELLCount"] = PremiumSELL
@@ -11951,13 +11951,13 @@ def dashboard(request, IPOid, value):
         BuyRate = OrderDetail.objects.filter(
             user=request.user, Order__OrderIPOName_id=IPOid, Order__OrderType="BUY"
         ).aggregate(Sum("Order__Rate"))["Order__Rate__sum"]
-        if BuyRate == None:
+        if BuyRate is None:
             BuyRate = 0
 
         SellRate = OrderDetail.objects.filter(
             user=request.user, Order__OrderIPOName_id=IPOid, Order__OrderType="SELL"
         ).aggregate(Sum("Order__Rate"))["Order__Rate__sum"]
-        if SellRate == None:
+        if SellRate is None:
             SellRate = 0
 
         try:
@@ -12189,7 +12189,7 @@ def sell(request, IPOid, selectgroup=None):
 
         if SubjectToQTY != "" and SubjectToQTY != "0" and SubjectToRate != "":
             if (
-                request.POST.get("subjectToIsPremiumRetail", "") != None
+                request.POST.get("subjectToIsPremiumRetail", "") is not None
                 and request.POST.get("subjectToIsPremiumRetail", "") != ""
                 and request.POST.get("subjectToIsPremiumRetail", "") == "on"
             ):
@@ -12251,7 +12251,7 @@ def sell(request, IPOid, selectgroup=None):
             and SubjectToRateSHNI != ""
         ):
             if (
-                request.POST.get("subjectToIsPremiumSHNI", "") != None
+                request.POST.get("subjectToIsPremiumSHNI", "") is not None
                 and request.POST.get("subjectToIsPremiumSHNI", "") != ""
                 and request.POST.get("subjectToIsPremiumSHNI", "") == "on"
             ):
@@ -12313,7 +12313,7 @@ def sell(request, IPOid, selectgroup=None):
             and SubjectToRateBHNI != ""
         ):
             if (
-                request.POST.get("subjectToIsPremiumBHNI", "") != None
+                request.POST.get("subjectToIsPremiumBHNI", "") is not None
                 and request.POST.get("subjectToIsPremiumBHNI", "") != ""
                 and request.POST.get("subjectToIsPremiumBHNI", "") == "on"
             ):
@@ -12511,7 +12511,7 @@ def sell(request, IPOid, selectgroup=None):
                 {"status": "error", "message": "SELL order dose not placed"}
             )
 
-    if selectgroup != None:
+    if selectgroup is not None:
         selectgroup = unquote(selectgroup)
     else:
         if Order.objects.count() > 0:
@@ -12576,7 +12576,7 @@ def OrderFunction(request, IPOid):
                         InvestorType=investortype,
                     )
                 count = x.aggregate(Sum("Quantity"))["Quantity__sum"]
-                if count == None:
+                if count is None:
                     dict_count[f"{ordercategory}{investortype}{ordertype}Count"] = 0
                     z = 0
                 else:
@@ -12689,7 +12689,7 @@ def OrderFunction(request, IPOid):
     PremiumBuyfilter = products.filter(OrderType="BUY", OrderCategory="Premium")
     PremiumBuyCount11 = PremiumBuyfilter.aggregate(Sum("Quantity"))
     PremiumBuyCount1 = PremiumBuyCount11["Quantity__sum"]
-    if PremiumBuyCount1 == None:
+    if PremiumBuyCount1 is None:
         PremiumBuyCount = 0
     else:
         PremiumBuyCount = PremiumBuyCount1
@@ -12706,7 +12706,7 @@ def OrderFunction(request, IPOid):
     PremiumSellfilter = products.filter(OrderType="SELL", OrderCategory="Premium")
     PremiumSellCount11 = PremiumSellfilter.aggregate(Sum("Quantity"))
     PremiumSellCount1 = PremiumSellCount11["Quantity__sum"]
-    if PremiumSellCount1 == None:
+    if PremiumSellCount1 is None:
         PremiumSellCount = 0
     else:
         PremiumSellCount = PremiumSellCount1
@@ -12759,13 +12759,13 @@ def OrderFunction(request, IPOid):
         OrderCategoryFilter = request.POST.get("OrderCategoryFilter", "")
         InvestorTypeFilter = request.POST.get("InvestorTypeFilter", "")
 
-        if InvestorTypeFilter == "" or InvestorTypeFilter == None:
+        if InvestorTypeFilter == "" or InvestorTypeFilter is None:
             InvestorTypeFilter = "All"
 
-        if Groupfilter == "" or Groupfilter == None:
+        if Groupfilter == "" or Groupfilter is None:
             Groupfilter = "All"
 
-        if OrderCategoryFilter == "" or OrderCategoryFilter == None:
+        if OrderCategoryFilter == "" or OrderCategoryFilter is None:
             OrderCategoryFilter = "All"
 
         if is_valid_queryparam(Groupfilter) and Groupfilter != "All":
@@ -12794,7 +12794,7 @@ def OrderFunction(request, IPOid):
                             InvestorType=investortype,
                         )
                     count = x.aggregate(Sum("Quantity"))["Quantity__sum"]
-                    if count == None:
+                    if count is None:
                         dict_count[f"{ordercategory}{investortype}{ordertype}Count"] = 0
                     else:
                         dict_count[f"{ordercategory}{investortype}{ordertype}Count"] = (
@@ -12846,7 +12846,7 @@ def OrderFunction(request, IPOid):
                         else:
                             amount = (i.Rate * i.Quantity) + amount
 
-                    if count == 0 or count == None:
+                    if count == 0 or count is None:
                         dict_avg[f"{ordercategory}{investortype}{ordertype}Avg"] = 0
                     else:
                         dict_avg[f"{ordercategory}{investortype}{ordertype}Avg"] = (
@@ -12895,7 +12895,7 @@ def OrderFunction(request, IPOid):
         PremiumBuyfilter = products.filter(OrderType="BUY", OrderCategory="Premium")
         PremiumBuyCount11 = PremiumBuyfilter.aggregate(Sum("Quantity"))
         PremiumBuyCount1 = PremiumBuyCount11["Quantity__sum"]
-        if PremiumBuyCount1 == None:
+        if PremiumBuyCount1 is None:
             PremiumBuyCount = 0
         else:
             PremiumBuyCount = PremiumBuyCount1
@@ -12912,7 +12912,7 @@ def OrderFunction(request, IPOid):
         PremiumSellfilter = products.filter(OrderType="SELL", OrderCategory="Premium")
         PremiumSellCount11 = PremiumSellfilter.aggregate(Sum("Quantity"))
         PremiumSellCount1 = PremiumSellCount11["Quantity__sum"]
-        if PremiumSellCount1 == None:
+        if PremiumSellCount1 is None:
             PremiumSellCount = 0
         else:
             PremiumSellCount = PremiumSellCount1
@@ -13007,7 +13007,7 @@ def OrderFunction(request, IPOid):
     page_obj = None
     try:
         page_size = request.POST.get("Order_page_size")
-        if page_size != "" and page_size != None:
+        if page_size != "" and page_size is not None:
             request.session["Order_page_size"] = page_size
         else:
             page_size = request.session["Order_page_size"]
@@ -13858,7 +13858,7 @@ def send_status_to_telegram(request, IPOid):
                     )
 
                 count = x.aggregate(Sum("Quantity"))["Quantity__sum"]
-                if count == None:
+                if count is None:
                     dict_count[f"{ordercategory}{investortype}{ordertype}Count"] = 0
                     z = 0
                 else:
