@@ -18,7 +18,6 @@ class CustomUser(AbstractUser):
     Allotment_access = models.BooleanField(max_length=100, default=False, null=True)
     Expiry_Date = models.DateField(default=now() + timedelta(days=365))
     AppPassword = models.CharField(max_length=100, default=None,blank=True,null=True)
-    # Broker_Id = models.OneToOneField(User, on_delete=models.CASCADE)
 
     TelegramApi_id = models.CharField(max_length=100, blank=True, null=True)
     TelegramApi_key = models.CharField(max_length=100, blank=True, null=True)
@@ -74,18 +73,7 @@ class GroupDetail(models.Model):
         return self.GroupName
 
 
-# class PremiumGroupDetail(models.Model):
-#     user = models.ForeignKey(
-#         CustomUser, on_delete=models.CASCADE, related_name="PremiumGroup", null=True)
-#     GroupName = models.CharField(max_length=100, default=None)
-#     GroupType = models.CharField(max_length=100, default=None)
-#     MobileNo = models.CharField(max_length=100, blank=True)
-#     Address = models.CharField(max_length=500,  blank=True)
-#     Remark = models.CharField(max_length=500,  blank=True)
-#     Active = models.BooleanField(default=True)
 
-#     def __str__(self):
-#         return self.GroupName
 
 
 class ClientDetail(models.Model):
@@ -93,7 +81,6 @@ class ClientDetail(models.Model):
         CustomUser, on_delete=models.CASCADE, related_name="Client", null=True)
     PANNo = models.CharField(max_length=10, default=None)
     Name = models.CharField(max_length=100,  blank=True)
-    # Group = models.CharField(max_length=100,  blank=True)
     Group = models.ForeignKey(
         GroupDetail, default=None, on_delete=models.SET_DEFAULT)
     ClientIdDpId = models.CharField(max_length=100,  blank=True)
@@ -102,7 +89,6 @@ class ClientDetail(models.Model):
     def save(self, *args, **kwargs):
         self.PANNo = self.PANNo.upper()
         self.Name = self.Name.upper()
-        # self.Group.GroupName = self.Group.GroupName.upper()
         super(ClientDetail, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -149,10 +135,7 @@ class Order(models.Model):
     Telly = models.CharField(max_length=100, default='False', null=True)
     
     def save(self, *args, **kwargs):
-        # self.OrderGroup.GroupName = self.OrderGroup.GroupName.upper()
-        # self.OrderIPOName.IPOName = self.OrderIPOName.IPOName.upper()  
         self.OrderType = self.OrderType.upper()
-        # self.OrderCategory = self.OrderCategory.upper()
         super(Order, self).save(*args, **kwargs)
 
 
@@ -181,23 +164,8 @@ def __str__(self):
     return self.OrderDetailIPOName
 
 
-# class PremiumOrderDetail(models.Model):
-#     user = models.ForeignKey(
-#         CustomUser, on_delete=models.CASCADE, null=True)
-#     PremiumOrderDetaillGroup = models.ForeignKey(
-#         GroupDetail, default=None, on_delete=models.SET_DEFAULT)
-#     PremiumOrderDetailIPOName = models.ForeignKey(
-#         CurrentIpoName, default=None, on_delete=models.SET_DEFAULT)
-#     Rate = models.FloatField(default=None)
-#     Qty = models.FloatField(blank=True, null=True)
-#     Amount = models.FloatField(default=0)
-#     OrderType = models.CharField(max_length=100, default=None)
-#     SellDate = models.DateField()
-#     Active = models.BooleanField(default=True)
 
 
-# def __str__(self):
-#     return self.PremiumOrderDetailIPOName
 
 
 class RateList(models.Model):
