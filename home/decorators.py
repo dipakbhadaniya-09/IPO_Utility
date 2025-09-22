@@ -8,7 +8,6 @@ def allowed_users(allowed_roles=[]):
         def wrapper_func(request, *args, **kwargs):
 
             group = None
-            # if request.user.groups.exists():
             if request.user.is_anonymous:
                 messages.error(
                 request, 'Your session is expired. Please log in again.')

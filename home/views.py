@@ -107,7 +107,6 @@ def isValidPAN(Z):
     Result=re.compile("[A-Za-z]{5}\d{4}[A-Za-z]{1}") 
     return Result.match(Z) 
 
-# @allowed_users(allowed_roles=['Broker'])
 @Broker_only
 def index(request):
     if request.user.is_anonymous:
@@ -182,40 +181,9 @@ def linkin_function():
         }
         return normalized_dict
 
-# def kefintech_function():
-#     global dropdown_dict
-#     def getDropDown(url ,max_attempts=5, timeout=10):
-#         for attempt in range(1, max_attempts + 1):
-#             try:
-#                 response = requests.get(url, verify='./pemfile/kfintech.pem',timeout=timeout)
-#                 if response.status_code == 200:
-#                     return response.text
-#                 else:
-#                     return None
-#             except RequestException as e:
-#                 print(f"Attempt {attempt}: Error - {e}")
-#                 sleep(0.5)
-#         return None
 
-#     urls = [
-#         'https://kprism.kfintech.com/ipostatus/',#server3
-#         'https://kosmic.kfintech.com/ipostatus/', #server1
-#         'https://evault.kfintech.com/ipostatus/',#server2
-#         'https://rti.kfintech.com/ipostatus/',#server5
-#         'https://kcasop.kfintech.com/ipostatus/',#server4
-#     ]
     
-#     html_content = None
-#     for url in urls:
-#         html_content = getDropDown(url, max_attempts=5, timeout=10)
-#         if html_content:
-#             break
 
-#     if html_content:
-#         soup = BeautifulSoup(html_content, 'html.parser')
-#         dropdown_options = soup.select('#ddl_ipo option')
-#         data = [option.text for option in dropdown_options]
-#         data2 = [option['value'] for option in dropdown_options]
 
 #         dropdown_dict = dict(zip(data, data2))
 #         normalized_dict = {
@@ -493,34 +461,10 @@ def get_options(request):
     else:
         return None
 
-# @sync_to_async
-# def bulk_create_or_update(entries):
-#     # with transaction.atomic():
-#         # Separate entries into those that need to be created and those that need to be updated
-#     objects_to_update = []
-
-#     for entry in entries:
-#         # Check if the record exists
-#         existing_entry = OrderDetail.objects.get(
-#             user=entry['user'],
-#             Order__OrderIPOName_id=entry['IPOid'],
-#             OrderDetailPANNo__PANNo=entry['panno'],
-#             Order__OrderType=entry['OrderType'],
-#         )
-#         if existing_entry:
-#             # If the record exists, update it
-#             existing_entry.AllotedQty = int(entry['shares_alloted'])
-#             objects_to_update.append(existing_entry)
-
-#     if objects_to_update:
-#         OrderDetail.objects.bulk_update(objects_to_update, fields=['AllotedQty'])
 
 
-# @sync_to_async
-# def update_database(user, IPOid, panno, shares_alloted,OrderType):
-#     entry = OrderDetail.objects.get(user=user, Order__OrderIPOName_id=IPOid, OrderDetailPANNo__PANNo=panno,Order__OrderType=OrderType)
-#     entry.AllotedQty = int(shares_alloted)
-#     entry.save()
+
+
 
 
 async def update_database(user, IPOid, panno, shares_alloted, OrderType):
@@ -537,7 +481,6 @@ async def update_database(user, IPOid, panno, shares_alloted, OrderType):
         print(f"Error updating database: {e}")
 
 async def linkin_token(session, url,ssl_context,retries=3, timeout=5):
-    # ssl_context = ssl.create_default_context(cafile='pemfile/my_trust_store.pem')
     for attempt in range(retries):
         try:
             async with session.post(url ,ssl = ssl_context) as response:
@@ -560,10 +503,6 @@ async def linkin_token(session, url,ssl_context,retries=3, timeout=5):
 
 async def Linkin_fetch_allotment(user,session, selected_key, panno, result,IPOid,OrderType,ssl_context,retries=3, timeout=5):
     
-    # def update_database(user, IPOid, panno, shares_alloted,OrderType):
-    #     entry = OrderDetail.objects.get(user=user, Order__OrderIPOName_id=IPOid, OrderDetailPANNo__PANNo=panno,Order__OrderType=OrderType)
-    #     entry.AllotedQty = int(shares_alloted)
-    #     entry.save()
     
     tknurl = 'https://in.mpms.mufg.com/Initial_Offer/IPO.aspx/generateToken'
     
@@ -571,7 +510,6 @@ async def Linkin_fetch_allotment(user,session, selected_key, panno, result,IPOid
     myobj = {'clientid': selected_key, 'PAN': panno, 'IFSC': '', 'CHKVAL': '1','token': token}
     
     url = "https://in.mpms.mufg.com/Initial_Offer/IPO.aspx/SearchOnPan"
-    # ssl_context = ssl.create_default_context(cafile='pemfile/my_trust_store.pem')
     for attempt in range(retries):
         flag = 0
         try:
@@ -725,23 +663,7 @@ async def linkin_allotment(user,IPOid,OrderType,ipo_register,ipo_name,Data):
             tasks.append(Linkin_fetch_allotment(user,session, selected_key, panno, result,IPOid,OrderType,ssl_context))
 
         responses = await asyncio.gather(*tasks)
-        # updates = []
-        # for res in responses:
-        #     if 'QTY1' in res:
-        #         if res['QTY1'] != 'No Record Found' and res['Name1'] != '' and res['QTY1'] != 'Application bidded but amount not blocked' and res['QTY1'].isdigit() and int(res['QTY1']) >= 0 : 
-        #             qty_sum = 0
-        #             for key, value in res.items():
-        #                 if key.startswith('QTY'):  # Check if the key starts with 'QTY'
-        #                     qty_sum += int(value)
                             
-        #             if 'QTY1' in res:
-        #                 updates.append({
-        #                     'user': user,
-        #                     'IPOid': IPOid,
-        #                     'panno': res['PAN'],
-        #                     'shares_alloted': qty_sum,
-        #                     'OrderType': OrderType,
-        #                 })
         
         # await bulk_create_or_update(updates)
         results.extend(responses)
@@ -833,23 +755,7 @@ async def Kfintech_allotment(user,IPOid,OrderType,ipo_register,ipo_name,Data):
             tasks.append(Kfintech_fetch_allotment(user,session, myobj, panno, result,IPOid,OrderType))
 
         responses = await asyncio.gather(*tasks)
-        # updates = []
-        # for res in responses:
-        #     if 'QTY1' in res:
-        #         if res['QTY1'] != 'PAN not found' and res['Name1'] != '.' :
-        #             qty_sum = 0
-        #             for key, value in res.items():
-        #                 if key.startswith('QTY'):  # Check if the key starts with 'QTY'
-        #                     qty_sum += int(value)
                             
-        #             if 'QTY1' in res:
-        #                 updates.append({
-        #                     'user': user,
-        #                     'IPOid': IPOid,
-        #                     'panno': res['PAN'],
-        #                     'shares_alloted': qty_sum,
-        #                     'OrderType': OrderType,
-        #                 })
        
         # await bulk_create_or_update(updates)
         results.extend(responses)
@@ -870,7 +776,6 @@ async def Kfintech_allotment(user,IPOid,OrderType,ipo_register,ipo_name,Data):
 
 async def BigShare_fetch_allotment(session,user, myobj, panno, result,IPOid,OrderType,ssl_context,retries=3, timeout=5):
     url = 'https://ipo.bigshareonline.com/Data.aspx/FetchIpodetails'
-    # ssl_context = ssl.create_default_context(cafile=r'pemfile/_.bigshareonline.pem')
     for attempt in range(retries):
         try:
             async with session.post(url, data=json.dumps(myobj),ssl = ssl_context) as response:
@@ -937,9 +842,7 @@ async def BigShare_allotment(user,IPOid,OrderType,ipo_register,ipo_name,Data):
     results = []
     
     ssl_context = ssl.create_default_context(cafile=r'pemfile/_.bigshareonline.pem')
-    # ssl_context.load_verify_locations(cafile=r'pemfile/_.bigshareonline.pem')
     
-    # connector = aiohttp.TCPConnector(limit=10000)
     async with aiohttp.ClientSession(headers={
         'Accept-Language': 'en-US,en;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -966,23 +869,7 @@ async def BigShare_allotment(user,IPOid,OrderType,ipo_register,ipo_name,Data):
 
         responses = await asyncio.gather(*tasks)
         valid_responses = [response for response in responses if response and 'error' not in response]
-        # updates = []
-        # for res in responses:
-        #     if 'QTY' in res:
-        #         if res['QTY'] != 'No data found' and res['Name'] != '':
-        #             qty_sum = 0
-        #             for key, value in res.items():
-        #                 if key.startswith('QTY'):  # Check if the key starts with 'QTY'
-        #                     qty_sum += int(value)
                             
-        #             if 'QTY' in res:
-        #                 updates.append({
-        #                     'user': user,
-        #                     'IPOid': IPOid,
-        #                     'panno': res['PAN'],
-        #                     'shares_alloted': qty_sum,
-        #                     'OrderType': OrderType,
-        #                 })
        
         # await bulk_create_or_update(updates)
         results.extend(responses)
@@ -1109,23 +996,7 @@ async def Purva_allotment(user,IPOid,OrderType,ipo_register,ipo_name,Data):
             tasks.append(Purva_fetch_allotment(session,user, selected_value, panno, result,IPOid,OrderType,ssl_context))
 
         responses = await asyncio.gather(*tasks)
-        # updates = []
-        # for res in responses:
-        #     if 'QTY' in res:
-        #         if res['QTY'] != 'No Record Found' and res['Name'] != '':
-        #             qty_sum = 0
-        #             for key, value in res.items():
-        #                 if key.startswith('QTY'):  # Check if the key starts with 'QTY'
-        #                     qty_sum += int(value)
                             
-        #             if 'QTY' in res:
-        #                 updates.append({
-        #                     'user': user,
-        #                     'IPOid': IPOid,
-        #                     'panno': res['PAN'],
-        #                     'shares_alloted': qty_sum,
-        #                     'OrderType': OrderType,
-        #                 })
        
         # await bulk_create_or_update(updates)
         results.extend(responses)
@@ -1220,23 +1091,7 @@ async def Integrated_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Da
             tasks.append(Integrated_fetch_allotment(user,session, myobj, panno, result,IPOid,OrderType))
 
         responses = await asyncio.gather(*tasks)
-        # updates = []
-        # for res in responses:
-        #     if 'QTY' in res:
-        #         if res['QTY'] != 'Records Not Found...!!!' and res['Name'] != '':
-        #             qty_sum = 0
-        #             for key, value in res.items():
-        #                 if key.startswith('QTY'):  # Check if the key starts with 'QTY'
-        #                     qty_sum += int(value)
                             
-        #             if 'QTY' in res:
-        #                 updates.append({
-        #                     'user': user,
-        #                     'IPOid': IPOid,
-        #                     'panno': res['PAN'],
-        #                     'shares_alloted': qty_sum,
-        #                     'OrderType': OrderType,
-        #                 })
        
         # await bulk_create_or_update(updates)
         results.extend(responses)
@@ -1256,7 +1111,6 @@ async def Integrated_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Da
 
 async def Maashitla_fetch_allotment(user,session, myobj, panno, result,IPOid,OrderType,ssl_context, retries=3,timeout=5):
     url = 'https://maashitla.com/PublicIssues/Search'
-    # ssl_context = ssl.create_default_context(cafile='pemfile/maashitla.pem')
     for attempt in range(retries):
         try:
             async with session.get(url, data=myobj,ssl = ssl_context) as response:
@@ -1320,23 +1174,7 @@ async def Maashitla_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Dat
             tasks.append(Maashitla_fetch_allotment(user,session, myobj, panno, result,IPOid,OrderType,ssl_context))
 
         responses = await asyncio.gather(*tasks)
-        # updates = []
-        # for res in responses:
-        #     if 'QTY' in res:
-        #         if res['QTY'] != 'Records Not Found...!!!' and res['Name'] != '':
-        #             qty_sum = 0
-        #             for key, value in res.items():
-        #                 if key.startswith('QTY'):  # Check if the key starts with 'QTY'
-        #                     qty_sum += int(value)
                             
-        #             if 'QTY' in res:
-        #                 updates.append({
-        #                     'user': user,
-        #                     'IPOid': IPOid,
-        #                     'panno': res['PAN'],
-        #                     'shares_alloted': qty_sum,
-        #                     'OrderType': OrderType,
-        #                 })
        
         # await bulk_create_or_update(updates)
         results.extend(responses)
@@ -1356,7 +1194,6 @@ async def Maashitla_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Dat
 
 async def SkyLine_fetch_allotment(user,session, myobj, panno, result,IPOid,OrderType,ssl_context,retries=3, timeout=5):
     url = 'https://www.skylinerta.com/display_application.php'
-    # ssl_context = ssl.create_default_context(cafile='pemfile/skylinerta.pem')
     for attempt in range(retries):
         try:
             async with session.post(url, data=myobj,ssl = ssl_context) as response:
@@ -1444,23 +1281,7 @@ async def SkyLine_allotment(user,IPOid,OrderType,ipo_register,ipo_name,Data):
             tasks.append(SkyLine_fetch_allotment(user,session, myobj, panno, result,IPOid,OrderType,ssl_context))
 
         responses = await asyncio.gather(*tasks)
-        # updates = []
-        # for res in responses:
-        #     if 'QTY' in res:
-        #         if res['QTY'] != 'Records Not Found...!!!' and res['Name'] != '':
-        #             qty_sum = 0
-        #             for key, value in res.items():
-        #                 if key.startswith('QTY'):  # Check if the key starts with 'QTY'
-        #                     qty_sum += int(value)
                             
-        #             if 'QTY' in res:
-        #                 updates.append({
-        #                     'user': user,
-        #                     'IPOid': IPOid,
-        #                     'panno': res['PAN'],
-        #                     'shares_alloted': qty_sum,
-        #                     'OrderType': OrderType,
-        #                 })
        
         # await bulk_create_or_update(updates)
         results.extend(responses)
@@ -1526,7 +1347,6 @@ async def Cambridge_fetch_allotment(user,panno,result,IPOid,OrderType,selected_v
                         
                         cap_pre_url =   'http://141.148.204.115:5000/predict'  #  Oci Captcha Prediction
                         dataa = json.dumps({"image_base": base64_resized})
-                        # while True:
                         response = requests.get(cap_pre_url, data=dataa)
                         response = response.json()
                         stqw = response['body']
@@ -1599,7 +1419,6 @@ async def Cambridge_fetch_allotment(user,panno,result,IPOid,OrderType,selected_v
                         
         except (asyncio.TimeoutError, aiohttp.ClientError) as e:
             print(f"ConnectionError for PAN {panno}. Retrying... (Attempt {attempt + 1}/{retries})")
-            # if attempt == 2:
             result['Qty'] = e
             result['REMRAK'] = 'ERROR'
             return result
@@ -1709,51 +1528,15 @@ def IPO_Allotment(request,IPOid,OrderType,group=None,IPOType=None,InvestType=Non
         PRI_limit  = CustomUser.objects.get( username = request.user)
         is_premium_user = PRI_limit.Allotment_access    
         
-        # Gp_Name =  group
-        # IPOTypefilter =  IPOType
-        # InvestorTypeFilter =  InvestType
         if str(is_premium_user) == 'True':
             Data = panlist
-        #     Data = []
-        #     if Pan_chck == 'All Record':
-        #         entry =  OrderDetail.objects.filter(
-        #                 user=request.user, Order__OrderIPOName_id=IPOid ,Order__OrderType=OrderType)
             
-        #     elif Pan_chck == 'Pending':
-        #         entry =  OrderDetail.objects.filter(
-        #                 user=request.user, Order__OrderIPOName_id=IPOid ,Order__OrderType=OrderType,AllotedQty__isnull=True)
             
-        #     if Gp_Name == 'All' and IPOTypefilter == 'All' and InvestorTypeFilter == 'All':
-        #         pass
-        #     elif IPOTypefilter == 'All' and Gp_Name=='All':
-        #         entry =  entry.filter(Order__InvestorType=InvestorTypeFilter)
-        #     elif IPOTypefilter == 'All' and InvestorTypeFilter=='All':   
-        #         entry = entry.filter(Order__OrderGroup__GroupName=Gp_Name)
-        #     elif InvestorTypeFilter=='All' and  Gp_Name=='All':
-        #         entry =  entry.filter(Order__OrderCategory=IPOTypefilter)
-        #     elif IPOTypefilter == 'All':   
-        #         entry = entry.filter(Order__OrderGroup__GroupName=Gp_Name, Order__InvestorType=InvestorTypeFilter)
-        #     elif Gp_Name =='All':
-        #         entry =  entry.filter(Order__OrderCategory=IPOTypefilter, Order__InvestorType=InvestorTypeFilter)
-        #     elif InvestorTypeFilter=='All':
-        #         entry =  entry.filter(Order__OrderCategory=IPOTypefilter, Order__OrderGroup__GroupName=Gp_Name)
-        #     else:
-        #         entry =  entry.filter(Order__OrderCategory=IPOTypefilter, Order__OrderGroup__GroupName=Gp_Name,Order__InvestorType=InvestorTypeFilter)
                 
-        #     if Gp_Name != 'All'  and is_valid_queryparam(Gp_Name):
-        #         entry = entry.filter(Order__OrderGroup__GroupName = Gp_Name)
             
-        #     if IPOTypefilter != 'All'  and is_valid_queryparam(IPOTypefilter):
-        #         entry = entry.filter(Order__OrderCategory=IPOTypefilter)
                 
-        #     if InvestorTypeFilter != 'All'  and is_valid_queryparam(InvestorTypeFilter):
-        #         entry = entry.filter(Order__InvestorType=InvestorTypeFilter)
             
             
-        #     if entry is not None and entry.exists():
-        #         for order_detail in entry:
-        #             if order_detail.OrderDetailPANNo and order_detail.OrderDetailPANNo.PANNo:
-        #                 Data.append(order_detail.OrderDetailPANNo.PANNo)
             
             if ipo_register == 'Linkin':
                 user = request.user
@@ -1764,43 +1547,12 @@ def IPO_Allotment(request,IPOid,OrderType,group=None,IPOType=None,InvestType=Non
                 user = request.user
                 now_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 response = asyncio.run(Cambridge_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
-                # try:  
-                #     loop = asyncio.get_event_loop()  
-                # except RuntimeError:
-                #     loop = asyncio.new_event_loop()
-                #     asyncio.set_event_loop(loop)
-                # try:
-                #     response = loop.run_until_complete(linkin_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
-                # except RuntimeError as e:
-                #     if str(e) == "Event loop is closed":
-                #         loop = asyncio.new_event_loop()
-                #         asyncio.set_event_loop(loop)
-                #         response = loop.run_until_complete(linkin_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
-                # finally:
-                #     # Cleanup
-                #     pending = asyncio.all_tasks(loop)
-                #     for task in pending:
-                #         task.cancel()
-                #     loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
-                #     loop.close()
                         
                 return response
                 
             elif ipo_register == 'Kfintech':
                 user = request.user
                 response = asyncio.run(Kfintech_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
-                # try:  
-                #     loop = asyncio.get_event_loop()  
-                # except RuntimeError:
-                #     loop = asyncio.new_event_loop()
-                #     asyncio.set_event_loop(loop)
-                # try:
-                #     response = loop.run_until_complete(Kfintech_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
-                # except RuntimeError as e:
-                #     if str(e) == "Event loop is closed":
-                #         loop = asyncio.new_event_loop()
-                #         asyncio.set_event_loop(loop)
-                #         response = loop.run_until_complete(Kfintech_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
                         
                 # finally:
                 #     pending = asyncio.all_tasks(loop)
@@ -1814,18 +1566,6 @@ def IPO_Allotment(request,IPOid,OrderType,group=None,IPOType=None,InvestType=Non
             elif ipo_register == 'BigShare':
                 user = request.user
                 response = asyncio.run(BigShare_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
-                # try:  
-                #     loop = asyncio.get_event_loop()  
-                # except RuntimeError:
-                #     loop = asyncio.new_event_loop()
-                #     asyncio.set_event_loop(loop)
-                # try:
-                #     response = loop.run_until_complete(BigShare_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
-                # except RuntimeError as e:
-                #     if str(e) == "Event loop is closed":
-                #         loop = asyncio.new_event_loop()
-                #         asyncio.set_event_loop(loop)
-                #         response = loop.run_until_complete(BigShare_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
                     
                 # finally:
                 #     # Cleanup
@@ -1841,19 +1581,6 @@ def IPO_Allotment(request,IPOid,OrderType,group=None,IPOType=None,InvestType=Non
                 user = request.user
                 response = asyncio.run(Purva_allotment(user, IPOid, OrderType, ipo_register, ipo_name ,Data))
 
-                # try:  
-                #     loop = asyncio.get_event_loop()  
-                # except RuntimeError:
-                #     loop = asyncio.new_event_loop()
-                #     asyncio.set_event_loop(loop)
-                # try:
-                #     response = loop.run_until_complete(Purva_allotment(user, IPOid, OrderType, ipo_register, ipo_name ,Data))
-                # except RuntimeError as e:
-                #     # Handle the case where the loop is already closed
-                #     if str(e) == "Event loop is closed":
-                #         loop = asyncio.new_event_loop()
-                #         asyncio.set_event_loop(loop)
-                #         response = loop.run_until_complete(Purva_allotment(user, IPOid, OrderType, ipo_register, ipo_name ,Data))
                     
                 # finally:
                 #     # Cleanup
@@ -1869,19 +1596,6 @@ def IPO_Allotment(request,IPOid,OrderType,group=None,IPOType=None,InvestType=Non
                 user = request.user
                 response = asyncio.run(SkyLine_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
 
-                # try:  
-                #     loop = asyncio.get_event_loop()  
-                # except RuntimeError:
-                #     loop = asyncio.new_event_loop()
-                #     asyncio.set_event_loop(loop)
-                # try:
-                #     response = loop.run_until_complete(SkyLine_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
-                # except RuntimeError as e:
-                #     # Handle the case where the loop is already closed
-                #     if str(e) == "Event loop is closed":
-                #         loop = asyncio.new_event_loop()
-                #         asyncio.set_event_loop(loop)
-                #         response = loop.run_until_complete(SkyLine_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
                     
                 # finally:
                 #     # Cleanup
@@ -1897,18 +1611,6 @@ def IPO_Allotment(request,IPOid,OrderType,group=None,IPOType=None,InvestType=Non
                 user = request.user
                 response = asyncio.run(Integrated_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
 
-                # try:  
-                #     loop = asyncio.get_event_loop()  
-                # except RuntimeError:
-                #     loop = asyncio.new_event_loop()
-                #     asyncio.set_event_loop(loop)
-                # try:
-                #     response = loop.run_until_complete(Integrated_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
-                # except RuntimeError as e:
-                #     if str(e) == "Event loop is closed":
-                #         loop = asyncio.new_event_loop()
-                #         asyncio.set_event_loop(loop)
-                #         response = loop.run_until_complete(Integrated_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
                         
                 # finally:
                 #     # Cleanup
@@ -1924,18 +1626,6 @@ def IPO_Allotment(request,IPOid,OrderType,group=None,IPOType=None,InvestType=Non
                 user = request.user
                 response = asyncio.run(Maashitla_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
 
-                # try:  
-                #     loop = asyncio.get_event_loop()  
-                # except RuntimeError:
-                #     loop = asyncio.new_event_loop()
-                #     asyncio.set_event_loop(loop)
-                # try:
-                #     response = loop.run_until_complete(Maashitla_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
-                # except RuntimeError as e:
-                #     if str(e) == "Event loop is closed":
-                #         loop = asyncio.new_event_loop()
-                #         asyncio.set_event_loop(loop)
-                #         response = loop.run_until_complete(Maashitla_allotment(user, IPOid, OrderType, ipo_register, ipo_name,Data))
                         
                 # finally:
                 #     # Cleanup
@@ -2455,10 +2145,8 @@ def AddGroup(request):
             MobileNo = request.POST.get('MobileNo', '')
             if MobileNo:
                 if len(MobileNo)!= 10 or not MobileNo.isdigit():
-                    # messages.error(request, 'Invalid Mobile No.')
                     messages.error(request, 'Invalid Mobile Number. Please enter exactly 10 digits.')
                     return redirect("/GroupSetup")
-                # elif len(MobileNo) == 10:
                     
                     
             Address = request.POST.get('Address', '')
@@ -2721,7 +2409,6 @@ def Order_calculate_update(i,IPOName):
             i.Amount = (-1*((float(IPOName.PreOpenPrice) -
                              (float(IPOName.IPOPrice) + float(i.Rate))) * int(i.Quantity)))
         i.save()
-    # pass
 
 async def Order_calculate_update_sync(j,IPOName):
     await Order_calculate_update(j,IPOName)
@@ -2758,15 +2445,8 @@ def calculate(IPOid,user,Orderid=None):
     IPOName = CurrentIpoName.objects.get(id=IPOid, user=user)
     
     order.update(Amount=0)
-    # for e in entry:
-    #     e.Amount = 0
-    #     e.save()
     entry.update(Amount=0)
-    # for o in order:
-    #     o.Amount = 0
-    #     o.save()
     
-    # entry_order_Calculate_sync(entry,order,IPOName)
     
     orders_to_update = []
     entries_to_update = []
@@ -2786,7 +2466,6 @@ def calculate(IPOid,user,Orderid=None):
         if i.Order.OrderCategory == 'Kostak':
             if i.AllotedQty == None:
                 i.Amount = 0
-                # i.save()
                 entries_to_update.append(i)
                 continue
             else:
@@ -2804,7 +2483,6 @@ def calculate(IPOid,user,Orderid=None):
             if i.AllotedQty == None:
                 i.Amount = 0
                 entries_to_update.append(i)
-                # i.save()
                 continue
             else:
                 AllotedQty = i.AllotedQty
@@ -2827,8 +2505,6 @@ def calculate(IPOid,user,Orderid=None):
             else:
                 i_amount = i_amount + 0
         
-        # i.Order.save()
-        # i.save()
         
         i.Order.Amount = i_amount
         amount[key] = i_amount
@@ -2846,7 +2522,6 @@ def calculate(IPOid,user,Orderid=None):
                             (float(IPOName.IPOPrice) + float(i.Rate))) * int(i.Quantity)
             if i.OrderType == "SELL":
                 i.Amount = (-1*((float(IPOName.PreOpenPrice) - (float(IPOName.IPOPrice) + float(i.Rate))) * int(i.Quantity)))
-            # i.save()
             orders_to_update.append(i)
             
         elif i.OrderCategory == 'CALL':
@@ -2866,7 +2541,6 @@ def calculate(IPOid,user,Orderid=None):
                     diff_paid = diff
                 i.Amount = (float(i.Quantity) * float(i.Rate) ) + diff_paid
                 
-            # i.save()
             orders_to_update.append(i)
             
         elif i.OrderCategory == 'PUT':
@@ -2886,7 +2560,6 @@ def calculate(IPOid,user,Orderid=None):
                     diff_paid = diff
                 i.Amount = (float(i.Quantity) * float(i.Rate) ) + diff_paid
             
-            # i.save()
             orders_to_update.append(i)
             
      
@@ -3106,7 +2779,6 @@ def UpdateGroup(request, GroupNameId):
             MobileNo = request.POST.get('MobileNo', '')
             if MobileNo:
                 if len(MobileNo)!= 10 or not MobileNo.isdigit():
-                    # messages.error(request, 'Invalid Mobile No.')
                     messages.error(request, 'Invalid Mobile Number. Please enter exactly 10 digits.')
                     return redirect("/GroupSetup")
             Address = request.POST.get('Address', '')
@@ -3127,22 +2799,6 @@ def UpdateGroup(request, GroupNameId):
             return redirect(f"/GroupSetup?page={page_number}")
     return render(request, 'EditGroup.html', {'employee': employee})
 
-# @allowed_users(allowed_roles=['Broker'])
-# def destroy(request, IPOid):
-#     page_number = request.GET.get('page','1')
-#     OrderDetail.objects.filter(
-#         user=request.user, Order__OrderIPOName_id=IPOid).delete()
-#     RateList.objects.filter(
-#         user=request.user, RateListIPOName_id=IPOid).delete()
-#     Order.objects.filter(
-#         user=request.user, OrderIPOName_id=IPOid).delete()
-#     ipo = CurrentIpoName.objects.get(id=IPOid, user=request.user)
-#     Accounting.objects.filter(id=ipo, user=request.user).update(ipo_name = ipo.IPOName,  status=True,ipo=None)
-#     ipo.delete()
-#     employee = CurrentIpoName.objects.get(
-#         id=IPOid, user=request.user)
-#     employee.delete()
-#     return redirect(f"/IPOSETUP?page={page_number}")
 
 
 @allowed_users(allowed_roles=['Broker'])
@@ -3190,18 +2846,15 @@ def DeleteClient(request, PANNoId):
 
 @allowed_users(allowed_roles=['Broker'])
 def DeleteAllClient(request):
-    # if request.method == "POST":
     page_number = request.GET.get('page','1')
     all_clients = ClientDetail.objects.filter(user=request.user)
     pan_data = []
-    # protected_pans = []
     for client in all_clients:
         is_used = OrderDetail.objects.filter(user=request.user, OrderDetailPANNo_id=client.id).exists()
         if not is_used:
             pan_data.append({'PAN': client.PANNo, 'Status': 'Deleted'})
             client.delete()
         else:
-            # protected_pans.append(str(client.PANNo))
             pan_data.append({'PAN': client.PANNo, 'Status': 'Not Deleted (Used in Orders)'})
             
     df = pd.DataFrame(pan_data)
@@ -3219,8 +2872,6 @@ def DeleteAllClient(request):
     return response
         
     
-    # if protected_pans:
-    #     messages.error(request, f"These PANs were not deleted as they are used in orders: {', '.join(protected_pans)}")
         
     # return redirect(f"/ClientSetup?page={page_number}")
     # else:
@@ -3349,7 +3000,6 @@ def BUY(request, IPOid, selectgroup=None):
                 order.save()
                 a = 1
 
-                # Order_Details_update_sync(KostakQTY, uid, order.id, PreOpenPrice)
                 
                 for i in range(0, int(KostakQTY)):
                     orderdetail = OrderDetail( user=uid, Order_id=order.id , PreOpenPrice = PreOpenPrice)
@@ -3374,7 +3024,6 @@ def BUY(request, IPOid, selectgroup=None):
                 order.save()
                 a = 1
                 
-                # Order_Details_update_sync(KostakQTYSHNI, uid, order.id, PreOpenPrice)
 
                 for i in range(0, int(KostakQTYSHNI)):
                     orderdetail = OrderDetail( user=uid, Order_id=order.id, PreOpenPrice=PreOpenPrice)
@@ -3399,7 +3048,6 @@ def BUY(request, IPOid, selectgroup=None):
                 order.save()
                 a = 1
 
-                # Order_Details_update_sync(KostakQTYBHNI, uid, order.id, PreOpenPrice)
                 
                 for i in range(0, int(KostakQTYBHNI)):
                     orderdetail = OrderDetail( user=uid, Order_id=order.id ,PreOpenPrice=PreOpenPrice)
@@ -3427,7 +3075,6 @@ def BUY(request, IPOid, selectgroup=None):
             try:
                 order.save()
                 a = 1
-                # Order_Details_update_sync(SubjectToQTY, uid, order.id, PreOpenPrice)
                 for i in range(0, int(SubjectToQTY)):
                     orderdetail = OrderDetail(
                         user=uid, Order_id=order.id, PreOpenPrice=PreOpenPrice)
@@ -3454,7 +3101,6 @@ def BUY(request, IPOid, selectgroup=None):
             try:
                 order.save()
                 a = 1
-                # Order_Details_update_sync(SubjectToQTYSHNI, uid, order.id, PreOpenPrice)
                 
                 for i in range(0, int(SubjectToQTYSHNI)):
                     orderdetail = OrderDetail(
@@ -3482,7 +3128,6 @@ def BUY(request, IPOid, selectgroup=None):
             try:
                 order.save()
                 a = 1
-                # Order_Details_update_sync(SubjectToQTYBHNI, uid, order.id, PreOpenPrice)
                 
                 for i in range(0, int(SubjectToQTYBHNI)):
                     orderdetail = OrderDetail(
@@ -3567,12 +3212,10 @@ def BUY(request, IPOid, selectgroup=None):
         if a == 1:
             messages.success(request, 'Buy order placed successfully. Telegram message sent successfully ')
             return JsonResponse({'status': 'success', 'message': 'BUY order placed successfully'})
-            # return redirect(f'/{IPOid}/BUY')
         else:
             messages.error(request, 'Buy order was not placed. Please try again.')
             return JsonResponse({'status': 'fail', 'message': 'BUY order dose not placed'})
             
-            # return redirect(f'/{IPOid}/BUY')
                         
     if selectgroup!=None:
         selectgroup=unquote(selectgroup)
@@ -4014,66 +3657,15 @@ def OrderDetailFunction(request, IPOid, Ordtyp, GrpName=None, OrderCategory=None
         paginator = Paginator([], 1)
         page_obj = paginator.get_page(1)
     
-    # df = pd.DataFrame.from_records(Data)
-    # html_table = "<table  >\n"
-    # html_table = "<thead><tr style='text-align: center;'>"
-    # html_table += "<th>Group</th>"
-    # html_table += "<th>Order Category</th>"
-    # if IPOName.IPOType == "MAINBOARD":
-    #     html_table += "<th>Investor Type</th>"
-    # html_table += "<th>Rate</th>"
-    # html_table += "<th>PAN No</th>"
-    # html_table += "<th>Client Name</th>"
-    # html_table += "<th>Alloted Qty</th>"
-    # html_table += "<th>Demat No</th>"
-    # html_table += "<th>Application No</th>"
-    # html_table += "<th>Date and Time</th>"
-    # html_table += "<th>Action</th>"
-    # html_table += "</tr></thead>\n" 
     
-    # html_table += "<tbody style='text-align: center;white-space: nowrap;'>"
-    # csrf_token = csrf.get_token(request)
     
-    # for i, row in df.iterrows():
-    #     datetime_str  = f"{row.Date} {row.Time}"
-    #     datetime_obj = datetime.strptime(datetime_str , "%Y-%m-%d %H:%M:%S")
-    #     formatted_datetime = datetime_obj.strftime("%b. %d, %Y %I:%M %p")
-    #     if IPOName.IPOType == 'MAINBOARD':
-    #         update =  f"/{IPOid}/{row.OrderType}/AddPan-{ row.id }/{Groupfilter}/{IPOTypefilter}/{InvestorTypeFilter}/{OrderDate}/{OrderTime}"
-    #     else:
-    #         update = f'/{IPOid}/{row.OrderType}/AddPan-{ row.id }/{Groupfilter}/{IPOTypefilter}/All/{OrderDate}/{OrderTime}'
-    #     html_table += f"<form action='{update}' method='POST'> <tr style='text-align: center;'>"      
-    #     html_table += f"<input type='hidden' name='csrfmiddlewaretoken' value='{csrf_token}'>"
-    #     html_table += f"<td>{row.OrderGroup}</td>"
-    #     html_table += f"<td>{row.OrderCategory}</td>"
-    #     if IPOName.IPOType == 'MAINBOARD':
-    #         html_table += f"<td>{row.InvestorType}</td>"
-    #     html_table += f"<td>{row.Rate}</td>"
-    #     html_table += f"<td style='width:185px;'><input class='auto' type='text' style='text-transform: uppercase;  width:165px;' maxlength='10' minlength='10' name='PAN' onclick='functiontest({row.id})' required value='{row.PANNo}'></td>"
-    #     html_table += f"<td style='width:185px;'><input class='auto1' id='{row.id}' type='text' style='width:165px;' name='clientname' value='{row.Name}'></td>"
-    #     html_table += f"<td style='width:90px;'><input type='text' onkeypress='return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46' style='width: 55px;' name='allotedqty' value='{row.AllotedQty}'></td>"
-    #     html_table += f"<td style='width:185px;'><input type='text' style='width:165px;' name='DematNo' value='{row.DematNumber}'></td>"
-    #     html_table += f"<td style='width:185px;'><input type='text' style='width:165px;' name='Application' value='{row.ApplicationNumber}'></td>"
-    #     html_table += f"<td>{formatted_datetime}</td>"
-    #     html_table += f"<td><button class='btn btn-outline-primary' type='submit' style='width: 72px;'>Update</button></td>"
-    #     html_table += "</tr></form>\n"
         
-    # html_table += "</tbody></table>" 
     
     
     df = pd.DataFrame.from_records(Data)
-    # paginator = Paginator(df.to_dict('records'), 10)
-    # page_number = request.GET.get('page')
-    # page_obj = paginator.get_page(page_number)
     
     html_table = "<table>\n"
     html_table = "<thead><tr style='text-align: center;'>"
-    # html_table = f"<form action='/{IPOid}/{Ordtyp}/update_pann' method='POST'>\n"
-    # csrf_token = csrf.get_token(request)
-    # html_table += f"<input type='hidden' name='csrfmiddlewaretoken' value='{csrf_token}'>"
-    # html_table += "<div style='text-align: right; margin-top: 0%;margin-bottom: 1%;'>"
-    # html_table += "<button class='btn btn-outline-primary' type='submit' style='width: 100px;'>Update</button>"
-    # html_table += "</div>\n"
     html_table += "<th>Sr No.</th>"
     html_table += "<th>Group</th>"
     html_table += "<th>Order Category</th>"
@@ -4097,10 +3689,6 @@ def OrderDetailFunction(request, IPOid, Ordtyp, GrpName=None, OrderCategory=None
             datetime_str  = f"{row.Date} {row.Time}"
             datetime_obj = datetime.strptime(datetime_str , "%Y-%m-%d %H:%M:%S")
             formatted_datetime = datetime_obj.strftime("%b. %d, %Y %I:%M %p")
-            # if IPOName.IPOType == 'MAINBOARD':
-            #     update =  f"/{IPOid}/{row.OrderType}/AddPan-{ row.id }/{Groupfilter}/{IPOTypefilter}/{InvestorTypeFilter}/{OrderDate}/{OrderTime}"
-            # else:
-            #     update = f'/{IPOid}/{row.OrderType}/AddPan-{ row.id }/{Groupfilter}/{IPOTypefilter}/All/{OrderDate}/{OrderTime}'
             html_table += f"<td>{row.sr_no}</td>"
             html_table += f"<td ondblclick=\"sendPostRequest('{IPOid}','{row.OrderGroup}','All','All','{Ordtyp}')\" title=\"Double-click to filter by this Group\">{row.OrderGroup}</td>"
             html_table += f"<td ondblclick=\"sendPostRequest('{IPOid}','All','{row.OrderCategory}','All','{Ordtyp}')\" title=\"Double-click to filter by this Group\">{row.OrderCategory}</td>"
@@ -4119,7 +3707,6 @@ def OrderDetailFunction(request, IPOid, Ordtyp, GrpName=None, OrderCategory=None
             html_table += "</tr>\n"
         
     html_table += "</tbody>"    
-    # html_table += "</form>" 
     html_table += "</table>"    
     
     PRI_limit  = CustomUser.objects.get(username = request.user)
@@ -4337,7 +3924,6 @@ def filterfromstatus(request, IPOid, Groupfilter, OrderCategoryFilter, InvestorT
         call_avg1 = call_buy_amount - call_sell_amount
         call_avg2 = call_sell_amount - call_buy_amount
         call_net_avg = call_avg1 - call_avg2
-        # call_net_amount = call_buy_amount - call_sell_amount
         if call_net_count != 0:
             call_avg = call_net_avg / call_net_count
             call_net_amount = call_buy_amount - call_sell_amount
@@ -4355,7 +3941,6 @@ def filterfromstatus(request, IPOid, Groupfilter, OrderCategoryFilter, InvestorT
         put_avg1 = put_buy_amount - put_sell_amount
         put_avg2 = put_sell_amount - put_buy_amount
         put_net_avg = put_avg1 - put_avg2
-        # put_net_amount = put_buy_amount - put_sell_amount 
         if put_net_count != 0:
             put_avg = put_net_avg / put_net_count
             put_net_amount = put_buy_amount - put_sell_amount
@@ -4483,7 +4068,6 @@ def filterfromstatus(request, IPOid, Groupfilter, OrderCategoryFilter, InvestorT
         html_table += "</tr>\n"
     html_table += "</tbody></table>"
     
-    # return render(request, 'Order.html', {'Group': Group.order_by('GroupName'), 'html_table': html_table, 'IPOid': IPOid, 'IPOName': IPO, 'Groupfilter': Groupfilter,'PremiumSellAmount':PremiumSellAmount,'PremiumNetAmount':PremiumNetAmount,'PremiumBuyAmount':PremiumBuyAmount,'net_count':net_count,'net_avg':net_avg,'net_amount':net_amount  ,'OrderCategoryFilter': OrderCategoryFilter,'InvestorTypeFilter': InvestorTypeFilter, 'dict_count': dict_count, 'dict_avg': dict_avg, 'dict_amount':dict_amount, 'PremiumBuyCount':PremiumBuyCount,'PremiumSellCount':PremiumSellCount,'PremiumNetCount':PremiumNetCount,'PremiumNetAvg':PremiumNetAvg,'PremiumNetAvg':"{:.2f}".format(PremiumNetAvg),'PremiumNetCount':"{:.2f}".format(PremiumNetCount), 'PremiumSellAvg':"{:.2f}".format(PremiumSellAvg),'PremiumBuyAvg':"{:.2f}".format(PremiumBuyAvg),'page_obj': page_obj,'Order_page_size':page_size})
     return render(request, 'Order.html', {'Group': Group.order_by('GroupName'), 'html_table': html_table, 'IPOid': IPOid, 'IPOName': IPO, 'Groupfilter': Groupfilter, 'OrderCategoryFilter': OrderCategoryFilter,'category_totals': category_totals,'strike_prices': strike_prices,'grand_total': grand_total, 'InvestorTypeFilter': InvestorTypeFilter,'PremiumBuyAmount':PremiumBuyAmount,'PremiumNetAmount':PremiumNetAmount,'PremiumSellAmount':PremiumSellAmount ,'dict_count': dict_count, 'net_count':net_count ,'net_avg':net_avg ,'net_amount':net_amount ,'dict_amount':dict_amount,'dict_avg': dict_avg,'PremiumNetCount':PremiumNetCount,'PremiumNetCount':"{:.2f}".format(PremiumNetCount),'PremiumNetAvg':PremiumNetAvg,'PremiumNetAvg':"{:.2f}".format(PremiumNetAvg), 'PremiumBuyCount':PremiumBuyCount,'PremiumSellCount':PremiumSellCount,'PremiumSellAvg':"{:.2f}".format(PremiumSellAvg),'PremiumBuyAvg':"{:.2f}".format(PremiumBuyAvg),'page_obj': page_obj,'Order_page_size':page_size})
 
 @allowed_users(allowed_roles=['Broker'])
@@ -4573,10 +4157,8 @@ def update_telly_status(request):
                     Order_entry = Order.objects.filter(user=request.user,OrderGroup= Group_entry.id,OrderIPOName=IPOId)
                     if Order_entry.exists():
                         Order_entry.update(Telly=status)
-                        # messages.success(request, 'Tally Status updated successfully.')
                         return JsonResponse({'success': True})
                     else:
-                        # messages.error(request, 'No orders found for this group')
                         return JsonResponse({'success': False, 'error': 'No orders found for this group'})
                     # Update all entries with this group name
                     # entries = YourModel.objects.filter(user=request.user, OrderGroup=groupname)
@@ -4587,11 +4169,9 @@ def update_telly_status(request):
                     #     return JsonResponse({'success': False, 'error': 'No matching entries'})
             except Exception as e:
                 traceback.print_exc()
-                # messages.error(request, f'Error occurred: {str(e)}')
                 return JsonResponse({'success': False, 'error': str(e)})
         except Exception as e:
                 traceback.print_exc()
-                # messages.error(request, f'Error occurred: {str(e)}')
                 return JsonResponse({'success': False, 'error': str(e)})
         
     return JsonResponse({'success': False, 'error': 'Invalid request'})
@@ -4893,7 +4473,6 @@ def Status(request, IPOid):
         html_table += "<th rowspan='2' scope='col' class='tableline'>Total Amount &nbsp;</th>"
         html_table += "</tr>\n"
         html_table += "<tr>"
-        # html_table += "<td></td>"
         html_table += "<td>Count</td>"
         html_table += "<td>Alloted</td>"
         html_table += "<td>Billing</td>"
@@ -4902,8 +4481,6 @@ def Status(request, IPOid):
         html_table += "<td>Billing</td>"
         html_table += "<td>Count</td>"
         html_table += "<td>Billing</td>"
-        # html_table += "<td></td>"
-        # html_table += "<td></td>"
 
         html_table += "</tr></thead>"
         float_format = "{:.1f}"
@@ -5370,7 +4947,6 @@ def Status(request, IPOid):
         
         html_table = "<table id=\"example\" class=\"table table-bordered table-hover table-striped\" style=\"max-width: 100vw;\" >\n"
         html_table += "<thead><tr >"
-        # html_table += "<th rowspan='3' style='text-align: center;'>Tally</th>"
         html_table += f"<th rowspan='3' scope='col' class='tableline'><input type='checkbox' id='master-tally-checkbox' {'checked' if all_groups_checked else ''} onchange='updateAllTellyStatus(this)'> Tally &nbsp;</th>"
         html_table += "<th rowspan='3' style='text-align: center;'>Group Name</th>"
         html_table += "<td colspan='9'>Kostak &nbsp;</td>"
@@ -5387,8 +4963,6 @@ def Status(request, IPOid):
         html_table += '<td colspan="3"  data-sort-type="numeric" scope="col"><b>Retail</b></td>'
         html_table += '<td colspan="3"  data-sort-type="numeric" scope="col"><b>SHNI</b></td>'
         html_table += '<td colspan="3"  data-sort-type="numeric" scope="col"><b>BHNI</b></td>'
-        # html_table += '<td colspan="2"  data-sort-type="numeric" scope="col"> </td>'
-        # html_table += '<td colspan="2" scope="col"  class="tableline"><b>Total</b></td>'
         html_table += "</tr>\n"
         
         html_table += "<tr>"
@@ -5539,15 +5113,9 @@ def GroupWiseDashboard(request):
     except:
         page_size = request.session.get('GWD_page_size', 50)
 
-    # page_size = request.POST.get('GWD_page_size') or request.session.get('GWD_page_size', 50)
 
-    # if page_size == 'All':
-    #     paginator = Paginator(Group, len(Group))
-    # else:
-    #     paginator = Paginator(Group, int(page_size))
 
     # # page_number = request.GET.get('page')
-    # page_obj = paginator.get_page(page_size)  # <-- page_obj is now safe to use
     
    
 
@@ -5576,7 +5144,6 @@ def GroupWiseDashboard(request):
             jv=True,
             amount_type='debit'
         ).aggregate(total=Sum('amount'))['total'] or 0
-        # jv_total = credit - debit
         JV_list.append(credit - debit)
         
     for IpoName in IPO:
@@ -5586,7 +5153,6 @@ def GroupWiseDashboard(request):
         for i in entry:
             total = total + i.Amount
         Total =Total + total
-        # if (total):
         if IpoName.IPOPrice != IpoName.PreOpenPrice:
             IPOAmount.append(total)
         else:
@@ -5606,10 +5172,8 @@ def GroupWiseDashboard(request):
         grpname.append(GroupName)
 
     accountingTotal = {}
-    # accounting_amount_dict = {}
     for GroupName in page_obj:
         IPOTotal = []
-        # accountingTotal = []
         for IpoName in IPOName:
             if IpoName.IPOName in accountingTotal:
                 total1 = accountingTotal[IpoName.IPOName]
@@ -5634,19 +5198,16 @@ def GroupWiseDashboard(request):
                     )
                 )['total'] or 0
                 accounting_amount = float(accounting_amount)
-                # accounting_amount_dict[(GroupName.id, IpoName.id)] = accounting_amount
                 total1 = total1 + float(accounting_amount)
                 for i in entry:
                     total = total + i.Amount
             else:
                 total = 0
-                # accounting_amount_dict[(GroupName.id, IpoName.id)] = 0
             IPOTotal.append(total)
             # accountingTotal.append(total1)
             accountingTotal[IpoName.IPOName] = total1
         nlist.append(IPOTotal)
 
-    # total_jv = sum(JV_list)
     accounting_dict = {}
 
     all_groups = GroupDetail.objects.filter(user=request.user)
@@ -5703,23 +5264,7 @@ def GroupWiseDashboard(request):
     for i, ipo in enumerate(IPOName):
         
         all_due_zero = True
-        # for index, row in df.iterrows():
         for group in all_groups:
-            # accounting_amount1 = Accounting.objects.filter(
-            #     user=request.user,
-            #     group=index,
-            #     ipo=ipo
-            # ).aggregate(
-            #     total=Sum(
-            #         Case(
-            #             When(amount_type='credit', then=F('amount')),
-            #             When(amount_type='debit', then=-F('amount')),
-            #             output_field=DecimalField()
-            #         )
-            #     )
-            # )['total'] or 0
-            # accounting_amount1 = accounting_dict.get((index.id, ipo.id), 0)
-            # due_amount = float(row[ipo]) - float(accounting_amount1)
             due_amount = due_dict.get((group.id, ipo.id), 0)
             if float(due_amount)  != 0:   
                 all_due_zero = False
@@ -5738,8 +5283,6 @@ def GroupWiseDashboard(request):
         html_table += "</th>"
         
     html_table += "<th>JV</th><th>Total</th><th>Collection</th><th>Due Amount</th>"
-    # for col in df.columns:
-    #     html_table += f"<td style='background :rgb(182, 182, 158)'>{col}</td>"
     html_table += "</tr></thead>\n" 
     
     html_table += "<tbody style='text-align: center;white-space: nowrap;'>"
@@ -6002,7 +5545,6 @@ async def process_data(request,userid, pan_data, IPOid, OrderType, Groupfilter, 
                     task = handle_single_row(userid, PAN, clientname, allotedqty, DematNo, Application, rate, request, row_id, IPOid, OrderType, Groupfilter, IPOTypefilter, InvestorTypefilter, page_number,Order_idlist)
                     tasks.append(task)  
 
-    # All_time = datetime.now()
     
     if tasks:
         await asyncio.gather(*tasks)
@@ -6078,37 +5620,11 @@ def Update_pann(request,IPOid,OrderType,GrpName=None, OrderCategory=None, Invest
     # now_time = datetime.now()        
     asyncio.run(process_data(request,userid, pan_data, IPOid, OrderType, Groupfilter, IPOTypefilter, InvestorTypefilter, page_number))
     
-    # tasks = []
-    # for row_id, data in pan_data.items():
-    #     PAN  =  data['PAN']
-    #     clientname  =  data['ClientName']
-    #     allotedqty  =  data['AllotedQty']
-    #     DematNo  =  data['DematNumber']
-    #     Application  =  data['ApplicationNumber']
-    #     rate  =  data['Rate']
         
-    #     if PAN != '':
-    #         if isValidPAN(PAN):
-    #             task = handle_single_row(userid, PAN, clientname, allotedqty, DematNo,Application,rate, request,row_id,IPOid,OrderType,Groupfilter,IPOTypefilter,InvestorTypefilter,page_number)
-    #             tasks.append(task)
             
     #         # else:
     #         #     Od_e.append(row_id)
     #             # messages.error(request, f"Row ['{Od_e.Order.OrderGroup}','{Od_e.Order.OrderCategory}','{Od_e.Order.InvestorType}','{rate}','{PAN}','{clientname}','{allotedqty}','{DematNo}','{Application}', 'Invalid PAN'] has Invalid PAN No.")
-    # if tasks:
-    # #     # asyncio.gather(*tasks)
-    #     try:  
-    #         loop = asyncio.get_event_loop()  
-    #     except RuntimeError:
-    #         loop = asyncio.new_event_loop()
-    #         asyncio.set_event_loop(loop)
-    #     try:
-    #         loop.run_until_complete(asyncio.gather(*tasks))
-    #     except RuntimeError as e:
-    #         if str(e) == "Event loop is closed":
-    #             loop = asyncio.new_event_loop()
-    #             asyncio.set_event_loop(loop)
-    #             loop.run_until_complete(asyncio.gather(*tasks))
                 
     #     finally:
     #         pending = asyncio.all_tasks(loop)
@@ -6117,12 +5633,8 @@ def Update_pann(request,IPOid,OrderType,GrpName=None, OrderCategory=None, Invest
     #         loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
     #         loop.close()
         
-    # async def run_tasks():
-    #     await asyncio.gather(*tasks)
     
-    # asyncio.run(run_tasks())
             
-        # loop.run_until_complete(asyncio.gather(*tasks))
     
         
     return redirect(f"/{IPOid}/OrderDetail/{OrderType}/{Groupfilter}/{IPOTypefilter}/{InvestorTypefilter}?page={page_number}")
@@ -6260,8 +5772,6 @@ def Billing(request, IPOid):
     IPO_Name = CurrentIpoName.objects.get(id=IPOid, user=userid)
     IpoName = IPO_Name.IPOName
     
-    # orderpreopen = OrderDetail.objects.filter(Order__OrderIPOName_id=IPOid, user=request.user, PreOpenPrice=0)
-    # orderpreopen.update(PreOpenPrice = IPO_Name.PreOpenPrice)
     
     IPOName = CurrentIpoName.objects.get(id=IPOid, user=userid)
 
@@ -6346,7 +5856,6 @@ def Billing(request, IPOid):
     order_count = order.count() if order else 0
     total_count = entry_count + order_count
 
-    # page_size = page_size if page_size != 'All' else total_count
     display_page_size  = page_size if page_size != 'All' else total_count
     paginator = Paginator(range(total_count), display_page_size)
 
@@ -6404,8 +5913,6 @@ def Billing(request, IPOid):
                 }
                 Data.append(order_data)
     
-    # if Data:
-    # if entry is not None and entry.exists():
     df = pd.DataFrame.from_records(Data)
     if "InvestorType" in df.columns:
         df = df.sort_values(by="InvestorType", key=lambda x: x == "PREMIUM").reset_index(drop=True)
@@ -6475,36 +5982,9 @@ def Billing(request, IPOid):
     html_table += "</tr></tfoot>"
     html_table += "</table>"
     
-    # if entry is not None and entry.exists():
-    #     for i, row in df.iterrows():
-    #         pre_open_price = row.PreOpenPrice if row.PreOpenPrice != 0.0 else IPO.PreOpenPrice
-    #         csrf_token = csrf.get_token(request)
             
-    #         if not pd.isna(row.id):
-    #             row_id = int(row.id)
-    #         else:
-    #             row_id = None
-    #         if IPOName.IPOType == "MAINBOARD":
-    #             action_url = f'/{IPOid}/{ row_id }/EditOrderPreOpenPrice/{row.OrderCategory}/{row.InvestorType}/{Groupfilter}/{IPOTypefilter}/{InvestorTypeFilter}'
-    #         else:
-    #             action_url = f'/{IPOid}/{ row_id }/EditOrderPreOpenPrice/{row.OrderCategory}/{row.InvestorType}/{Groupfilter}/{IPOTypefilter}/All'
                 
                 
-    #         html_table += f"""
-    #             <div class="modal fade" id="edit-{ row.id }" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels"
-    #                 aria-hidden="true">
-    #                 <div class="modal-dialog" role="document">
-    #                     <div class="modal-content">
-    #                         <div class="modal-header" style="border-bottom: 1px solid black;">
-    #                             <h5 class="modal-title" id="exampleModalLabels">PreOpen Price Edit</h5>
-    #                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-    #                                 <span aria-hidden="true">&times;</span>
-    #                             </button>
-    #                         </div>
-    #                         <div class="modal-body" style="border-bottom: 1px solid black;">
-    #                             <form action="{action_url}"  method="POST"
-    #                                 enctype="multipart/form-data" style="margin: 15px 22px;" class="need-validation"
-    #                                 novalidate>
                                     
     #                                 <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_token}">
     #                                 <label for="category"><b>PreOpenPrice : </b></label>
@@ -6548,8 +6028,6 @@ def FileterBilling(request, IPOid ,group,IPOType,InvestType):
     
     IPOName = CurrentIpoName.objects.get(id=IPOid, user=userid)
     
-    # order = Order.objects.filter(
-    #     user=userid, OrderIPOName_id=IPOid, OrderCategory="Premium")
     
     order = Order.objects.filter(
             user=userid,
@@ -6606,7 +6084,6 @@ def FileterBilling(request, IPOid ,group,IPOType,InvestType):
     order_count = order.count() if order else 0
     total_count = entry_count + order_count
 
-    # page_size = page_size if page_size != 'All' else total_count
     display_page_size  = page_size if page_size != 'All' else total_count
     paginator = Paginator(range(total_count), display_page_size)
 
@@ -6728,35 +6205,9 @@ def FileterBilling(request, IPOid ,group,IPOType,InvestType):
     html_table += "</tr></tfoot>"
     html_table += "</table>"
         
-        # for i, row in df.iterrows():
-        #     pre_open_price = row.PreOpenPrice if row.PreOpenPrice != 0.0 else IPO.PreOpenPrice
-        #     csrf_token = csrf.get_token(request)
             
-        #     if not pd.isna(row.id):
-        #         row_id = int(row.id)
-        #     else:
-        #         row_id = None
                 
-        #     if IPOName.IPOType == "MAINBOARD":
-        #         action_url = f'/{IPOid}/{ row_id }/EditOrderPreOpenPrice/{row.OrderCategory}/{row.InvestorType}/{Groupfilter}/{IPOTypefilter}/{InvestorTypeFilter}'
-        #     else:
-        #         action_url = f'/{IPOid}/{ row_id }/EditOrderPreOpenPrice/{row.OrderCategory}/{row.InvestorType}/{Groupfilter}/{IPOTypefilter}/All'
                 
-        #     html_table += f"""
-        #         <div class="modal fade" id="edit-{ row.id }" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels"
-        #             aria-hidden="true">
-        #             <div class="modal-dialog" role="document">
-        #                 <div class="modal-content">
-        #                     <div class="modal-header" style="border-bottom: 1px solid black;">
-        #                         <h5 class="modal-title" id="exampleModalLabels">PreOpen Price Edit</h5>
-        #                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        #                             <span aria-hidden="true">&times;</span>
-        #                         </button>
-        #                     </div>
-        #                     <div class="modal-body" style="border-bottom: 1px solid black;">
-        #                         <form action="{action_url}" id="form-id2" method="POST"
-        #                             enctype="multipart/form-data" style="margin: 15px 22px;" class="need-validation"
-        #                             novalidate>
                                     
         #                             <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_token}">
         #                             <label for="category"><b>PreOpenPrice : </b></label>
@@ -6771,7 +6222,6 @@ def FileterBilling(request, IPOid ,group,IPOType,InvestType):
         #     """
 
     return render(request, 'Billing.html', {'Group': Group,'html_table':html_table,'select': IPOTypefilterList, 'select2': InvestorTypeFilterList,"total": "{:.2f}".format(total),'Groupfilter': Groupfilter, "IPOName": IPO, 'IPOTypefilter': IPOTypefilter, 'InvestorTypeFilter': InvestorTypeFilter,  "IPO": IPO, "IPOid": IPOid,'page_obj': page_obj,'Billing_page_size':page_size})
-    # return render(request, 'Billing.html', {'entry': entry, 'order': order, 'Group': Group.order_by('GroupName'), 'select': IPOTypefilterList, 'select2': InvestorTypeFilterList, "total": "{:.2f}".format(total), 'Groupfilter': Groupfilter, "IPOName": IPO, 'IPOTypefilter': IPOTypefilter, 'InvestorTypeFilter': InvestorTypeFilter,  "IPO": IPO, "IPOid": IPOid})
 
 #client wise biling filter wise download fun
 @allowed_users(allowed_roles=['Broker'])
@@ -7916,9 +7366,6 @@ def Order_upload(request, IPOid, Groupfilter, Ordercatagoryfilter, InvestorTypef
                                         order.save()
                                         a = 1           
                                         Order_Details_update_sync(O_Quantity, uid, order.id, PreOpenPrice)
-                                        # for i in range(0, int(O_Quantity)):
-                                        #     orderdetail = OrderDetail( user=user, Order_id=order.id , PreOpenPrice = PreOpenPrice)
-                                        #     orderdetail.save()
                                 elif O_Category.strip().upper() == 'PREMIUM' and O_InvestorType.strip().upper() == 'PREMIUM':
                                     if O_Quantity != '' and O_Quantity != "0" and O_Rate != '':
                                         order = Order(user=uid, OrderGroup_id=gid, OrderIPOName=IPOName, InvestorType ='PREMIUM',
@@ -7959,7 +7406,6 @@ def Order_upload(request, IPOid, Groupfilter, Ordercatagoryfilter, InvestorTypef
                                     messages.error(request, f"Row {column} has error.", extra_tags='error' )
                             else:
                                 a = 0
-                                # if O_Category != 'Premium' and O_Category != 'premium' and O_Category != 'PREMIUM' and O_InvestorType.strip().upper() != 'PREMIUM':
                                 if (
                                     O_Category.strip().upper() != 'PREMIUM'
                                     and O_InvestorType.strip().upper() != 'PREMIUM'
@@ -7985,9 +7431,6 @@ def Order_upload(request, IPOid, Groupfilter, Ordercatagoryfilter, InvestorTypef
                                         order.save()
                                         a = 1
                                         Order_Details_update_sync(O_Quantity, uid, order.id, PreOpenPrice)
-                                        # for i in range(0, int(O_Quantity)):
-                                        #     orderdetail = OrderDetail( user=uid, Order_id=order.id, PreOpenPrice=PreOpenPrice)
-                                        #     orderdetail.save()
                                 elif O_Category.strip().upper() == 'PREMIUM' and  O_InvestorType.strip().upper() == 'PREMIUM':
                                     if O_Quantity != '' and O_Quantity != "0" and O_Rate != '':
                                         order = Order(user=uid, OrderGroup_id=gid, OrderIPOName=IPOName, InvestorType ='PREMIUM',
@@ -8210,7 +7653,6 @@ def dashboard(request, IPOid, value):
             except:
                 SubjectToRateForCustomer = 0
 
-            # ShareSellAgainestKostak = AvgShare * noofkostakapplication
             order = Order.objects.filter(
                 user=request.user, OrderIPOName_id=IPOid)
             Kostakentry = order.filter(OrderCategory="Kostak")
@@ -9518,9 +8960,6 @@ def sell(request, IPOid,selectgroup=None):
             try:
                 order.save()
                 a = 1
-                # Order_Details_update_sync(KostakQTY, uid, order.id, PreOpenPrice)
-                # sync_to_async(Order_Details_update_sync)(KostakQTY, uid, order.id, PreOpenPrice)
-                # asyncio.create_task(Order_Details_update(KostakQTY,uid,order.id,PreOpenPrice))
 
                 for i in range(0, int(KostakQTY)):
                     orderdetail = OrderDetail(user=uid, Order_id=order.id, PreOpenPrice=PreOpenPrice)
@@ -9546,7 +8985,6 @@ def sell(request, IPOid,selectgroup=None):
                 order.save()
                 a = 1
                 
-                # Order_Details_update_sync(KostakQTYSHNI, uid, order.id, PreOpenPrice)
 
                 for i in range(0, int(KostakQTYSHNI)):
                     orderdetail = OrderDetail( user=uid, Order_id=order.id, PreOpenPrice=PreOpenPrice)
@@ -9571,7 +9009,6 @@ def sell(request, IPOid,selectgroup=None):
             try:
                 order.save()
                 a = 1
-                # Order_Details_update_sync(KostakQTYBHNI, uid, order.id, PreOpenPrice)
                 
                 for i in range(0, int(KostakQTYBHNI)):
                     orderdetail = OrderDetail( user=uid, Order_id=order.id, PreOpenPrice=PreOpenPrice)
@@ -9600,7 +9037,6 @@ def sell(request, IPOid,selectgroup=None):
             try:
                 order.save()
                 a = 1
-                # Order_Details_update_sync(SubjectToQTY, uid, order.id, PreOpenPrice)
                 for i in range(0, int(SubjectToQTY)):
                     orderdetail = OrderDetail(
                         user=uid, Order_id=order.id, PreOpenPrice=PreOpenPrice)
@@ -9629,7 +9065,6 @@ def sell(request, IPOid,selectgroup=None):
             try:
                 order.save()
                 a = 1
-                # Order_Details_update_sync(SubjectToQTYSHNI, uid, order.id, PreOpenPrice)
                 for i in range(0, int(SubjectToQTYSHNI)):
                     orderdetail = OrderDetail(
                         user=uid, Order_id=order.id, PreOpenPrice=PreOpenPrice)
@@ -9658,7 +9093,6 @@ def sell(request, IPOid,selectgroup=None):
             try:
                 order.save()
                 a = 1
-                # Order_Details_update_sync(SubjectToQTYBHNI, uid, order.id, PreOpenPrice)
                 
                 for i in range(0, int(SubjectToQTYBHNI)):
                     orderdetail = OrderDetail(
@@ -9744,7 +9178,6 @@ def sell(request, IPOid,selectgroup=None):
         if a == 1:
             messages.success(request, 'Sell order placed successfully. Telegram message sent successfully ')
             return JsonResponse({'status':'success','message':'SELL order placed successfully'})
-            # return render(request, 'sell.html')
             
         else:
             messages.error(request, 'Sell order was not placed. Please try again.')
@@ -9959,16 +9392,6 @@ def OrderFunction(request, IPOid):
     #     grand_put_count += put_count
     #     grand_put_amount += put_amount
         
-    # grand_total = {
-    #     "call_total_count": grand_call_count,
-    #     "call_avg": grand_call_amount/grand_call_count if grand_call_count else 0,
-    #     "put_total_count": grand_put_count,
-    #     "put_avg": grand_put_amount/grand_put_count if grand_put_count else 0,
-    # }
-    # category_totals = {
-    #     "CALL": {"count": grand_call_count, "avg": grand_total["call_avg"]},
-    #     "PUT":  {"count": grand_put_count, "avg": grand_total["put_avg"]},
-    # }
 
     
     if request.method == "POST":
@@ -10024,8 +9447,6 @@ def OrderFunction(request, IPOid):
                                 amount = (i.Rate * i.Quantity) + amount
                         # 🔹 Special handling for OPTIONS CALL/PUT with StrikePrice
                         elif investortype == "OPTIONS" and ordercategory in ["CALL", "PUT"]:
-                            # print("OPTIONS CALL/PUT detected")
-                            # x = products.filter(OrderType=ordertype, InvestorType="OPTIONS")
                             strike = getattr(i, "Method", None) or "NA"
 
                             # Initialize dict structure
@@ -10147,7 +9568,6 @@ def OrderFunction(request, IPOid):
         call_avg1 = call_buy_amount - call_sell_amount
         call_avg2 = call_sell_amount - call_buy_amount
         call_net_avg = call_avg1 - call_avg2
-        # call_net_amount = call_buy_amount - call_sell_amount
         if call_net_count != 0:
             call_avg = call_net_avg / call_net_count
             call_net_amount = call_buy_amount - call_sell_amount
@@ -10165,7 +9585,6 @@ def OrderFunction(request, IPOid):
         put_avg1 = put_buy_amount - put_sell_amount
         put_avg2 = put_sell_amount - put_buy_amount
         put_net_avg = put_avg1 - put_avg2
-        # put_net_amount = put_buy_amount - put_sell_amount 
         if put_net_count != 0:
             put_avg = put_net_avg / put_net_count
             put_net_amount = put_buy_amount - put_sell_amount
@@ -10267,8 +9686,6 @@ def OrderFunction(request, IPOid):
         html_table += f"<td ondblclick=\"sendPostRequest('{IPOid}','{row.OrderGroup}','All','All')\" title=\"Double-click to filter by this Group\">{row.OrderGroup}</td>"
         html_table += f"<td >{row.OrderType}</td>"
         html_table += f"<td ondblclick=\"sendPostRequest('{IPOid}','All','{row.OrderCategory}','All')\" title=\"Double-click to filter by this Order Category\">{row.OrderCategory}</td>"
-        # if row.InvestorType == 'OPTIONS':
-        #     html_table += f"<td>{row.Method}</td>"
         if row.OrderCategory != 'Premium':
             method_value = row.Method if row.Method else 'Application'
             html_table += f"<td>{method_value}</td>"
@@ -10397,11 +9814,7 @@ def verify_telegram_otp(request):
         session_string = request.POST.get("session_string")
         phone_code_hash = request.POST.get("phone_code_hash")
         
-        # print(f"OTP_SESSIONS: {OTP_SESSIONS}")
-        # session_data = OTP_SESSIONS.get(user.username)
 
-        # if not session_data:
-        #     return JsonResponse({'status': 'error', 'message': 'No OTP session found'})
         if not all([otp, phone, api_id, api_hash, session_string, phone_code_hash]):
             return JsonResponse({'status': 'error', 'message': 'Missing required data'})
 
@@ -10420,9 +9833,6 @@ def verify_telegram_otp(request):
                 session_str = client.session.save()
                 print(f"Session String: {session_str}")
                 print(len(session_str))
-                # custom_user = CustomUser.objects.get(username=user)
-                # custom_user.Telegram_session = session_str
-                # custom_user.save()
                 custom_user = await sync_to_async(CustomUser.objects.get)(username=user)
                 custom_user.Telegram_session = session_str
                 await sync_to_async(custom_user.save)()
@@ -10480,10 +9890,6 @@ def update_user_profile(request):
             custom_user.Mobileno = request.POST.get('mobile_number')
 
         custom_user.save()
-        # return JsonResponse({"status": "success", "message": "Profile updated successfully!"})
-        # print(request.headers)  # Debugging line to check headers
-        # print(request.headers.get('x-requested-with'))
-        # # ✅ Check if request is AJAX
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             messages.success(request, 'Profile updated successfully!')
             return JsonResponse({"status": "success"})
@@ -10733,7 +10139,6 @@ def share_status_telegram(request):
 
         go = orders.filter(OrderGroup=grp)
 
-        # Kostak (Retail/SHNI/BHNI)
         k_r_q, k_r_r = net_qty_and_rate(go.filter(OrderCategory="Kostak", InvestorType="RETAIL"))
         k_s_q, k_s_r = net_qty_and_rate(go.filter(OrderCategory="Kostak", InvestorType="SHNI"))
         k_b_q, k_b_r = net_qty_and_rate(go.filter(OrderCategory="Kostak", InvestorType="BHNI"))
@@ -11089,8 +10494,6 @@ def send_status_to_telegram_image(request, IPOid):
         return JsonResponse({'status': 'error', 'message': 'No image file provided'}, status=400)
     
     image_file = request.FILES['image']
-    # from django.core.files.storage import default_storage
-    # file_path = default_storage.save(f"{IPOid}_status.png", image_file)
 
     # ✅ Get Group ID (primary key) from POST
     group_id = request.POST.get('group_id')
@@ -11147,10 +10550,6 @@ def send_status_to_telegram_image(request, IPOid):
     
     # ✅ Save uploaded file temporarily
     try:
-        # with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
-        #     for chunk in image_file.chunks():
-        #         tmp.write(chunk)
-        #     temp_path = tmp.name
 
         # Run async safely
         # result = async_to_sync(send_image)()
@@ -11183,29 +10582,12 @@ def accounting_view(request):
         gname =  entry.group_name
         if gname and gname not in Group_DropDown:
             Group_DropDown.append(gname)
-        # if entry.ipo_id:  # FK exists
-        #     IPO_DropDown.append(entry.ipo.IPOName)  # from related IPO table
-        # else:
-        #     IPO_DropDown.append(entry.ipo_name or "")  # from local field
     
-    # group_id = request.GET.get("group_id")
-    # ipo_id = request.GET.get("ipo_id")
     group_name = request.GET.get("group_name")  # string instead of group_id
     ipo_name = request.GET.get("ipo_name")
     date_from = request.GET.get("date_from")
     date_to = request.GET.get("date_to")
 
-    # if group_id:
-    #     entries = entries.filter(group_id=group_id)
-    # if ipo_id:
-    #     entries = entries.filter(ipo_id=ipo_id)
-    # if date_from:
-    #     date_from_obj = datetime.fromisoformat(date_from).date()  # extract date only
-    #     entries = entries.filter(date_time__date__gte=date_from_obj)
-    # if date_to:
-    #     date_to_obj = datetime.fromisoformat(date_to).date()  # extract date only
-    #     entries = entries.filter(date_time__date__lte=date_to_obj)
-    # grouped_entries = {}
     if ipo_name:
         entries = entries.filter(Q(ipo__IPOName__iexact=ipo_name) | Q(ipo_name__iexact=ipo_name))
         
@@ -11265,12 +10647,6 @@ def accounting_view(request):
     
 
     # # Check in database
-    # if e.ipo:
-    #     ipo_display = e.ipo.IPOName
-    # elif ipo_obj:
-    #     ipo_display = ipo_obj.ipo.IPOName if ipo_obj.ipo else ipo_obj.ipo_name
-    # else:
-    #     ipo_display = ''
 
     rows = ""
     credit_amount = 0
@@ -11318,23 +10694,6 @@ def accounting_view(request):
     html_table += f"<tbody style='text-align: center;white-space: nowrap;'> {rows} </tbody>\n"
     html_table += "</table>"
     
-    # html_table = f"""
-    # <table id="example" class="table table-bordered table-hover table-striped dataTable no-footer">
-    #     <thead>
-    #         <tr>
-    #             <th>IPO</th>
-    #             <th>Group</th>
-    #             <th>Amount Type</th>
-    #             <th>Amount</th>
-    #             <th>Remark</th>
-    #             <th>Date Time</th>
-    #         </tr>
-    #     </thead>
-    #     <tbody>
-    #         {rows}
-    #     </tbody>
-    # </table>
-    # """
     
     ipos_master = CurrentIpoName.objects.filter(user =request.user)
     groups_master = GroupDetail.objects.filter(user=request.user)
@@ -11460,8 +10819,6 @@ def save_transaction(request):
         ipo_name = ipo_obj.IPOName if ipo_obj else f"IPO ID {ipo_id}"
         group_name = group_obj.GroupName if group_obj else f"Group ID {group_id}"
         
-        # default_remark = f"JV from {group_name} for {ipo_name}"
-        # jv_remark1 = f"{default_remark}  {jv_remark}" 
         
         
         try:
@@ -11493,7 +10850,6 @@ def save_transaction(request):
             )
 
             return redirect("accounting")  
-            # return JsonResponse({"status": "success"})
 
         except Exception as e:
             traceback.print_exc()
@@ -11522,8 +10878,6 @@ def save_transaction_group(request):
         ipo_name = ipo_obj.IPOName if ipo_obj else f"IPO ID {ipo_id}"
         group_name = group_obj.GroupName if group_obj else f"Group ID {group_id}"
         
-        # default_remark = f"JV from {group_name} for {ipo_name}"
-        # jv_remark1 = f"{default_remark}  {jv_remark}" 
         
         
         try:
@@ -11555,7 +10909,6 @@ def save_transaction_group(request):
             )
 
             return redirect("GroupWiseDashboard")  
-            # return JsonResponse({"status": "success"})
 
         except Exception as e:
             traceback.print_exc()
@@ -11579,9 +10932,6 @@ def add_transaction(request):
         remark = request.POST.get("remark")
         date_time_str  = request.POST.get("date_time")
 
-        # date_time = datetime.strptime(date_time_str, "%Y-%m-%dT%H:%M")
-        # date_time = timezone.make_aware(date_time)  # optional if using timezone-aware field
-        # date_time = parse_datetime(date_time_str) if date_time_str else timezone.now()
         if date_time_str:
             # Add seconds if missing
             if len(date_time_str) == 16:  # "YYYY-MM-DDTHH:MM"
@@ -11628,9 +10978,6 @@ def add_transaction_group(request):
         remark = request.POST.get("remark")
         date_time_str  = request.POST.get("date_time")
 
-        # date_time = datetime.strptime(date_time_str, "%Y-%m-%dT%H:%M")
-        # date_time = timezone.make_aware(date_time)  # optional if using timezone-aware field
-        # date_time = parse_datetime(date_time_str) if date_time_str else timezone.now()
         if date_time_str:
             # Add seconds if missing
             if len(date_time_str) == 16:  # "YYYY-MM-DDTHH:MM"
@@ -11819,7 +11166,6 @@ def Share_AppDetails(request):
         Custom_user = CustomUser.objects.get(username=request.user)
         user_email = Custom_user.email
         user_app_pw = Custom_user.AppPassword  
-        # user_app_pw = ''
         
         if not user_email:
             messages.info(request, f'Email configuration is pending for {request.user}')
@@ -11837,16 +11183,8 @@ def Share_AppDetails(request):
         if OrderType == "SELL":
             entry = entry.filter(Order__OrderType="SELL")
                 
-        # for group_data in group_name_list:
-        #     group = unquote(group_data['name'])
-        #     group_email = group_data['email']
             
-        #     GP = GroupDetail.objects.get(
-        #         GroupName=group, user=request.user)
             
-        #     gid = GP.id
-        #     if not group_email:
-        #         group_email = GP.Email
             
         #     if not group_email:
         #         messages.error(request, f"Failed to share Group Details: '{group}' has no associated email address.")
@@ -11857,58 +11195,20 @@ def Share_AppDetails(request):
         #         messages.error(request, f"Failed to share Group Details: '{group}' has an invalid email address.")
         #         continue
             
-        #     entry_forGp = entry.filter(Order__OrderGroup_id=gid)
             
-        #     csv_buffer = StringIO()
                 
-        #     writer = csv.writer(csv_buffer)
-        #     writer.writerow(['Group', 'IPO Type', 'Investor Type', 'Rate', 'PAN No',
-        #                     'Client Name', 'AllotedQty', 'Demat Number', 'Application Number', 'Order Date', 'Order Time'])
 
-        #     if record_type == 'Pending PAN':
-        #         for member in entry_forGp.filter(OrderDetailPANNo_id=None).values_list('Order__OrderGroup__GroupName', 'Order__OrderCategory', 'Order__InvestorType','Order__Rate', 'OrderDetailPANNo__PANNo', 'OrderDetailPANNo__Name', 'AllotedQty','DematNumber', 'ApplicationNumber', 'Order__OrderDate', 'Order__OrderTime'):
-        #             List = list(member)
-        #             List[9] = str(List[9].strftime('%d/%m/%Y'))
-        #             if List[7] != "":
-        #                 List[7] = "'" + List[7]
-        #             member = tuple(List)
-        #             writer.writerow(member)
-        #     else:
-        #         for member in entry_forGp.filter().values_list('Order__OrderGroup__GroupName', 'Order__OrderCategory', 'Order__InvestorType','Order__Rate', 'OrderDetailPANNo__PANNo', 'OrderDetailPANNo__Name', 'AllotedQty','DematNumber', 'ApplicationNumber', 'Order__OrderDate', 'Order__OrderTime'):
-        #             List = list(member)
-        #             List[9] = str(List[9].strftime('%d/%m/%Y'))
-        #             if List[7] != "":
-        #                 List[7] = "'" + List[7]
-        #             member = tuple(List)
-        #             writer.writerow(member)
                 
-        #     csv_content = csv_buffer.getvalue()  
             
         #     # recipient_list = [group_email]
             
-        #     try:
-        #         msg = MIMEMultipart()  # Change EmailMessage to MIMEMultipart
-        #         msg['Subject'] = f'IPO Details for Group: {group} ({IPOName.IPOName})'
-        #         msg['From'] = user_email
-        #         msg['To'] = group_email 
                 
-        #         msg.attach(MIMEText('Please find the attached IPO details CSV.', 'plain'))
                 
-        #         part = MIMEApplication(csv_content, Name=f'{group}_{IPOName.IPOName}.csv')
-        #         part['Content-Disposition'] = f'attachment; filename="{group}_{IPOName.IPOName}.csv"'
-        #         msg.attach(part)
                 
-        #         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        #             smtp.login(user_email, user_app_pw)
-        #             smtp.send_message(msg)
                 
         #         # messages.success(request, f'Bill for {group} shared successfully from {user_email} to {", ".join(recipient_list)}!')
                 
-        #     except Exception as e:
-        #         traceback.print_exc()
-        #         messages.error(request, f'Failed to share Group Details: {e}')
         
-        # if group_name_list:        
         threads = []
         for group_data in group_name_list:
             t = threading.Thread(target=send_group_email, args=(request,group_data, IPOName, entry, record_type, user_email, user_app_pw, request.user,OrderType))
