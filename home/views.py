@@ -2260,7 +2260,7 @@ def ClientSetup(request, PanNoId="None"):
     page_obj = None
     try:
         page_size = request.POST.get("client_page_size")
-        if page_size != "" and page_size != None:
+        if page_size != "" and page_size is not None:
             request.session["client_page_size"] = page_size
         else:
             page_size = request.session["client_page_size"]
