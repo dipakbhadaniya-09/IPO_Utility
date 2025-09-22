@@ -3,12 +3,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import Group, User
 from django.contrib.auth import logout, authenticate, login
 from . models import CurrentIpoName, GroupDetail, Order, OrderDetail, ClientDetail, CustomUser, RateList
-from math import ceil
-from django import forms
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.contrib import messages
 from django.utils import timezone
-from .filters import OrderFilter
 import datetime
 from datetime import datetime
 import csv
@@ -16,39 +13,29 @@ import io
 import shutil
 from zipfile import ZipFile
 from io import BytesIO
-from django.middleware import csrf
-from django.utils import formats
-from django.contrib.staticfiles.storage import staticfiles_storage
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Spacer, Paragraph
 from reportlab.lib import colors
 import os
-from django.templatetags.static import static
 import pandas as pd
-from django.db.models import Avg, Max, Min, Sum
+from django.db.models import Avg, Sum
 from django.db.models import Q
 from django.db.models import F
 from .decorators import allowed_users, Broker_only
 from urllib.parse import unquote
 import re,requests,json,base64 
 from bs4 import BeautifulSoup
-from requests.exceptions import ConnectTimeout,RequestException
 from time import sleep
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
-from openpyxl import Workbook
 import aiohttp
 import asyncio
 from asgiref.sync import sync_to_async,async_to_sync
-from django.db.models.functions import Coalesce
-from django.db import connection
 import ssl
 from django.utils.timezone import now
-from django.db import transaction
 from django.core.paginator import Paginator
-from django.views.generic import ListView
 import traceback
 from PIL import Image
 from django.views.decorators.csrf import csrf_exempt
@@ -61,7 +48,6 @@ import time
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 import threading
-from aiosmtplib import SMTP
 from datetime import datetime
 from django.http.response import JsonResponse
 from django.contrib.auth.models import Group, User
@@ -73,23 +59,17 @@ from telethon import TelegramClient
 from .models import CustomUser
 from telethon.sync import TelegramClient
 from telethon.sessions import StringSession
-from django.conf import settings
-
-
-
-import tempfile
 from asgiref.sync import async_to_sync
 from .models import CustomUser, CurrentIpoName, GroupDetail
 from .models import Accounting, CurrentIpoName, GroupDetail
-from django.db.models import Sum, Case, When, F, Value, DecimalField,FloatField , Q
-from django.shortcuts import render, get_object_or_404
+from django.db.models import Sum, Case, When, F, DecimalField,FloatField , Q
+from django.shortcuts import render
 
 from django.utils.html import format_html
 
 from io import BytesIO
 import json
 from django.utils.dateparse import parse_datetime
-import decimal
 
 def expiry_date_processor(request):
     if request.user.is_authenticated:
